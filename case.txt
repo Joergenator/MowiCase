@@ -1,0 +1,139 @@
+Barents Watch Lice Data Challenge
+The goal of this assignment is to explore BarentsWatch lice and treatment data for all aquaculture sites in Norway, identify meaningful biological and operational patterns, and build predictive models for future lice-limit breaches.
+The datasets contain weekly lice counts, treatment records, site information, and environmental variables across Norwegian production areas.
+You are free to use all tools at your disposal to solve this task, such as LLMs and other tools that may speed up the process for solving the task. 
+
+Prioritize certain tasks if you feel you do not have time to complete all the work and focus on the areas that motivate you the most.
+You are free to spend as much time as you have available. Your results will be reviewed relative to the time spent on it. Use the case to help us see your technical skills and talents
+Datasets:
+The datasets are stored and can be downloaded here as csv: Link to files
+https://1drv.ms/f/c/f93e3ba6e2b84b83/IgB1ioxlZfvWQJwVeRNH2AzrAQqWxhoro9MjUe99TEDkh4Q?e=dZMtyH
+vlice: Weekly lice counts on site level; Link to file 
+vtreatment: Weekly treatments on site level; Link to file
+You can read more about the datasets here (these are public data sets):
+vlice description:  Data - BarentsWatch - Lice
+vtreatment description: Data - BarentsWatch - Treatments
+1. Exploratory analysis
+Load and prepare the BarentsWatch datasets, then perform exploratory analysis to identify key trends and patterns, including/suggestions:
+•	Which production areas have the most treatments relative to the number of active sites? 
+•	Which regions or production areas appear to breach lice limits most consistently? 
+•	At which temperatures does lice pressure appear most prevalent in each production area? 
+•	Are there seasonal, geographical, or treatment-related patterns worth highlighting? 
+•	What other interesting biological, operational, or regional insights can be found? 
+•	What is the correlation between adult female lice and mobile lice in each PO? 
+
+2. Predictive modelling
+Build Prediction models to estimate number of weekly lice-limit breaches at site level. 
+The models must be trained only on data from before 2026. Data from 2026 must not be used for training or feature engineering that leaks future information.
+Create prediction models for:
+•	Nr of breaches 1 week ahead  (next week)
+•	Nr of breaches 2 weeks ahead 
+•	Nr of breaches 12 weeks ahead 
+Keep a portion of historical data fully unseen for validation. Important to use only data up to prediction time. 
+Suggested features for testing could include:
+•	Temperature
+•	Latitude and longitude
+•	Historical lice pressure at the site
+•	Previous breach history
+•	Neighboring-site lice pressure
+•	Recent treatments
+•	Seasonal features
+•	External and exotic data sources, if useful, as long as they do not introduce post-2025 data leakage
+Evaluate model performance for each prediction horizon using relevant metrics such as MAE, MSE, RMSE, accuracy or other metrics. Explore binary models as well if you have time (one or more breaches). Give insights to which features are important. Also assess where the model performs well and poorly, especially across different production areas.
+3. LLM-based insight agent
+Create an LLM agent or question-answering layer on top of the prepared data, allowing users to query the dataset using natural language.
+The agent should be able to answer questions such as:
+•	Which areas currently show increasing lice pressure? 
+•	Which sites have had repeated breaches? 
+•	Which production areas have the highest treatment intensity? 
+•	What patterns are visible before breaches occur? 
+•	Which sites appear most at risk in the coming weeks? 
+Bonus Tasks (if you have time)
+4. Breach Risk Prediction All Data
+Using the trained model, predict breach risk for all sites in the Barents Watch data 12 weeks ahead from the latest week available in the data set. 
+Identify the sites with the highest predicted risk of breaching the lice limit and explain the main drivers behind the predictions.
+5. Port Stata Code to Python
+Given the Stata code below, port it to Python. You are free to add new features and capabilities in Python. You can use what tool you like to port the code. 
+
+* ============================================================
+* Atlantic salmon growth model
+* Based on: Handeland et al. (2008) Aquaculture 283:36-42
+*           Bjornsson & Steinarsson (2002); Jobling (1994)
+*
+* Model: SGR = f(T, W) — bell-shaped in T, declining in W
+*   SGR(%/day) = alpha * W^beta * [a*T + b*T^2]
+*
+* Parameterisation anchored to Handeland 2008 empirical values:
+*   At W~150g: SGR(6°C)=0.78, SGR(10°C)=1.35, SGR(14°C)=1.53, SGR(18°C)=1.29
+*   Optimum T_opt ~ 13-14°C for small fish, shifts slightly with size
+*   SGR declines with weight: beta ~ -0.30 (allometric exponent)
+*
+* Integration: daily Euler method
+*   W(t+1) = W(t) * exp(SGR(T,W(t))/100)
+* ============================================================
+
+clear
+set obs 401
+gen day = _n - 1
+
+* --- Parameters ---
+local W0    = 50        // initial weight (g)
+local beta  = -0.30     // allometric size exponent (SGR declines with W)
+local Topt_base = 13.5  // optimum temperature at reference size (°C)
+local k     = 0.018     // curvature of bell curve (controls width)
+
+* Calibrated scaling so SGR at W=150, T=14 ≈ 1.53 %/day
+* SGR(T,W) = alpha * W^beta * exp(-k*(T - Topt)^2)
+* alpha calibrated: 1.53 = alpha * 150^(-0.30) * exp(0)
+* => alpha = 1.53 / 150^(-0.30)
+local alpha = 1.53 / (150^(-0.30))
+
+* --- Simulate growth for each temperature ---
+foreach temp of numlist 4(2)20 {
+
+    gen w_temp`temp' = `W0'
+    
+    forvalues d = 1/400 {
+        local prev = d - 1
+        * SGR bell curve in temperature
+        quietly replace w_temp`temp' = ///
+            w_temp`temp'[_n-1] * ///
+            exp( (`alpha' * (w_temp`temp'[_n-1])^(`beta') * ///
+                  exp(-`k' * (`temp' - `Topt_base')^2)) / 100 ) ///
+            if day == `d'
+    }
+}
+
+* --- Plot ---
+twoway ///
+    (line w_temp4  day, lcolor(navy)    lwidth(medthin))  ///
+    (line w_temp6  day, lcolor(blue)    lwidth(medthin))  ///
+    (line w_temp8  day, lcolor(dkgreen) lwidth(medthin))  ///
+    (line w_temp10 day, lcolor(green)   lwidth(medium))   ///
+    (line w_temp12 day, lcolor(lime)    lwidth(medium))   ///
+    (line w_temp14 day, lcolor(orange)  lwidth(thick) lpattern(solid)) ///
+    (line w_temp16 day, lcolor(red)     lwidth(medium))   ///
+    (line w_temp18 day, lcolor(cranberry) lwidth(medthin)) ///
+    (line w_temp20 day, lcolor(maroon)  lwidth(medthin))  ///
+    , ///
+    ytitle("Weight (g)") ///
+    xtitle("Day post sea-transfer") ///
+    title("Atlantic salmon growth by temperature") ///
+    subtitle("SGR model: Handeland et al. (2008), bell-shaped T response") ///
+    note("Optimum T ~13-14°C; SGR declines with weight (W^-0.30)." ///
+         "18-20°C growth ≈ 10°C due to elevated maintenance metabolism.") ///
+    legend(order( ///
+        1 "4°C"  2 "6°C"  3 "8°C"  4 "10°C" 5 "12°C" ///
+        6 "14°C (optimum)" 7 "16°C" 8 "18°C" 9 "20°C") ///
+        cols(3) size(small)) ///
+    graphregion(color(white))
+ 
+Presentation
+You will have:
+•	20 minutes to present your approach, findings, models, and conclusions 
+•	10 minutes for questions 
+It is a plus if the code is deployed to GitHub or a similar platform so the analysis can be reviewed and reproduced, including verification that no 2026 data was used for model training (for the predictive model).
+You should be able to explain how well the prediction model and LLM model is performing and how well this could work in an operational setting. How would you deploy it for production? 
+
+You are allowed to use all tools available; we encourage you to use your creativity. 
+Please contact christer.hadland@mowi.com if you have any questions 

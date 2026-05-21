@@ -1,0 +1,45 @@
+# Raw and processed data — never committed
+data/raw/
+data/processed/
+data/interim/
+*.csv
+*.parquet
+*.duckdb
+*.db
+*.sqlite
+
+# Models and large binaries
+models/*.pkl
+models/*.joblib
+models/*.lgb
+models/*.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.env
+.env.local
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs / outputs
+*.log
+reports/figures/*.png.tmp
+
+# Anthropic API key file (if you stash one locally)
+.anthropic_key
