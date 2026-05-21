@@ -32,9 +32,11 @@ RAW = ROOT / "data" / "raw"
 TRAIN_CUTOFF = pd.Timestamp("2026-01-01")
 
 # Plausible bounds for data cleaning (defensive — peek found a 196 °C outlier)
-SEA_TEMP_MIN = -2.0   # below seawater freezing → sensor error
-SEA_TEMP_MAX = 30.0   # above this in Norwegian waters → sensor error
-LICE_MAX = 200.0      # any lice count above this is implausible
+SEA_TEMP_MIN = -2.0       # below seawater freezing → sensor error
+SEA_TEMP_MAX = 30.0       # above this in Norwegian waters → sensor error
+LICE_MAX = 200.0          # mobile/female adult lice — anything > 200 is implausible
+PERSISTENT_LICE_MAX = 50.0  # persistent (sessile) lice — q99 ≈ 2.9, max 99
+                             # row found at value 99 was clearly a sentinel
 
 
 # ----------------------------------------------------------------------------
@@ -53,8 +55,11 @@ def _yes_no_to_bool(s: pd.Series) -> pd.Series:
 
 
 def _normalize_pa(name: pd.Series) -> pd.Series:
-    """Production area names have a 'Nordhord(a)land til Stadt' typo. Normalize."""
-    return name.str.replace("Nordhordland til Stadt", "Nordhordaland til Stadt", regex=False)
+    """Normalize known source-data inconsistencies in production area names."""
+    return (name
+            .str.replace("Nordhordland til Stadt", "Nordhordaland til Stadt", regex=False)
+            # 'Ryfylke' is the older spelling; 'Ryfylket' (definite article) is current.
+            .replace({"Ryfylke": "Ryfylket"}))
 
 
 # ----------------------------------------------------------------------------
@@ -81,7 +86,19 @@ def load_lice(
     # Build the week-start date column up-front; everything downstream uses it
     df["WEEK_START"] = iso_week_to_date(df["YEAR"], df["WEEK"])
 
-    # Cast booleans
+    # Cast booleans.
+    #
+    # BREACH is built directly from the source `OVERTHELICELIMITWEEK` column,
+    # NOT re-derived from FEMALEADULT vs LICELIMITWEEK. The reason: the source
+    # flag uses the regulatory rule which is FEMALEADULT >= LICELIMITWEEK
+    # ("reaching the limit counts as a breach"), not strict `>`. The audit
+    # confirmed 851 rows where FEMALEADULT == LICELIMITWEEK exactly all have
+    # OVERTHELICELIMITWEEK = "Ja". If you ever need to derive BREACH yourself,
+    # use `>=`, not `>`.
+    #
+    # OVERTHELICELIMITWEEK also has a third value "Ukjent" (Unknown), used when
+    # no lice count happened that week. `_yes_no_to_bool` maps that to <NA>,
+    # which is the correct semantics — we don't know whether the site breached.
     df["LIKELYNOFISH"] = _yes_no_to_bool(df["LIKELYNOFISH"])
     df["HAVECOUNTEDLICE"] = _yes_no_to_bool(df["HAVECOUNTEDLICE"])
     df["BREACH"] = _yes_no_to_bool(df["OVERTHELICELIMITWEEK"])
@@ -93,9 +110,20 @@ def load_lice(
     mask_bad_temp = (df["SEATEMPERATURE"] < SEA_TEMP_MIN) | (df["SEATEMPERATURE"] > SEA_TEMP_MAX)
     df.loc[mask_bad_temp, "SEATEMPERATURE"] = np.nan
 
-    for col in ["FEMALEADULT", "MOBILELICE", "PERSISTENTLICE"]:
-        df.loc[df[col] > LICE_MAX, col] = np.nan
+    # Per-column upper bounds (PERSISTENTLICE has a tighter cap — see constants)
+    col_max = {"FEMALEADULT": LICE_MAX,
+               "MOBILELICE": LICE_MAX,
+               "PERSISTENTLICE": PERSISTENT_LICE_MAX}
+    for col, maximum in col_max.items():
+        df.loc[df[col] > maximum, col] = np.nan
         df.loc[df[col] < 0, col] = np.nan
+
+    # Drop exact-duplicate rows on the natural key (SITENUMBER, YEAR, WEEK).
+    # The audit found 1,067 site-week pairs that appear twice with byte-identical
+    # values — a data-extraction artefact. Treatment data is NOT deduped because
+    # its multi-row groups are legitimate compound treatments (e.g. Cypermethrin
+    # + Deltamethrin in the same bath).
+    df = df.drop_duplicates(subset=["SITENUMBER", "YEAR", "WEEK"], keep="first")
 
     # Normalize PA name typo
     df["PRODUCTIONAREA"] = _normalize_pa(df["PRODUCTIONAREA"])
@@ -108,7 +136,12 @@ def load_lice(
         df = df[df["LIKELYNOFISH"] != True].copy()  # noqa: E712
 
     if apply_cutoff:
-        df = df[df["WEEK_START"] < TRAIN_CUTOFF].copy()
+        # Two-pronged filter: WEEK_START strictly before 2026-01-01 AND source
+        # YEAR column strictly < 2026. The second clause guards against the ISO
+        # calendar edge case where week 1 of 2026 starts on Mon 2025-12-29 —
+        # that row's WEEK_START is in December but its YEAR is 2026, and we
+        # treat anything labeled 2026 in the source as 2026 data.
+        df = df[(df["WEEK_START"] < TRAIN_CUTOFF) & (df["YEAR"] < 2026)].copy()
         assert_no_leakage(df)
 
     return df.sort_values(["SITENUMBER", "WEEK_START"]).reset_index(drop=True)
@@ -126,7 +159,7 @@ def load_treatment(apply_cutoff: bool = True) -> pd.DataFrame:
                           "TREATMENT_SK", "TREATMENT_HK"])
 
     if apply_cutoff:
-        df = df[df["WEEK_START"] < TRAIN_CUTOFF].copy()
+        df = df[(df["WEEK_START"] < TRAIN_CUTOFF) & (df["YEAR"] < 2026)].copy()
         assert_no_leakage(df)
 
     return df.sort_values(["SITENUMBER", "WEEK_START"]).reset_index(drop=True)
@@ -146,16 +179,22 @@ class LeakageError(AssertionError):
 
 
 def assert_no_leakage(df: pd.DataFrame, date_col: str = "WEEK_START") -> None:
-    """Raise LeakageError if any row has date >= TRAIN_CUTOFF.
+    """Raise LeakageError if any row contains 2026 data.
 
-    Call this on every training-time DataFrame. It's cheap and acts as
-    a runtime contract that the cutoff has not been violated by joins,
-    feature engineering, or rolling windows.
+    Two independent checks:
+      1. WEEK_START < TRAIN_CUTOFF (2026-01-01)
+      2. YEAR < 2026 (catches the ISO-week-1-of-2026 edge case where a row's
+         WEEK_START Monday falls in late December but its source YEAR is 2026)
+
+    Call this on every training-time DataFrame. It's cheap and acts as a
+    runtime contract that the cutoff has not been violated by joins, feature
+    engineering, or rolling windows.
     """
     if date_col not in df.columns:
         raise LeakageError(f"Cannot verify leakage: column {date_col!r} missing")
     if len(df) == 0:
         return
+
     max_date = df[date_col].max()
     if pd.notna(max_date) and max_date >= TRAIN_CUTOFF:
         n_bad = (df[date_col] >= TRAIN_CUTOFF).sum()
@@ -163,6 +202,15 @@ def assert_no_leakage(df: pd.DataFrame, date_col: str = "WEEK_START") -> None:
             f"Found {n_bad} rows with {date_col} >= {TRAIN_CUTOFF.date()} "
             f"(max={max_date.date()}). This data must not be used for training."
         )
+
+    if "YEAR" in df.columns:
+        max_year = df["YEAR"].max()
+        if pd.notna(max_year) and max_year >= 2026:
+            n_bad = (df["YEAR"] >= 2026).sum()
+            raise LeakageError(
+                f"Found {n_bad} rows with YEAR >= 2026 (max={int(max_year)}). "
+                "Source labels these as 2026 data — must not be used for training."
+            )
 
 
 # ----------------------------------------------------------------------------

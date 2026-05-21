@@ -43,3 +43,8 @@ reports/figures/*.png.tmp
 
 # Anthropic API key file (if you stash one locally)
 .anthropic_key
+
+# Personal interview / project notes — never committed
+PROJECT_NOTES.md
+NOTES.md
+SCRATCH.md
