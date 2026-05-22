@@ -1,0 +1,701 @@
+{
+  "horizons": [
+    1,
+    2,
+    12
+  ],
+  "summary_rows": [
+    {
+      "baseline": "LightGBM v1",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.3825,
+      "P@100": 0.75,
+      "Brier": 0.02694,
+      "count_MAE": 3.78
+    },
+    {
+      "baseline": "LightGBM v2",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.3791,
+      "P@100": 0.78,
+      "Brier": 0.02703,
+      "count_MAE": 3.78
+    },
+    {
+      "baseline": "LightGBM v1",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.2357,
+      "P@100": 0.66,
+      "Brier": 0.03099,
+      "count_MAE": 4.48
+    },
+    {
+      "baseline": "LightGBM v2",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.2324,
+      "P@100": 0.67,
+      "Brier": 0.03111,
+      "count_MAE": 4.48
+    },
+    {
+      "baseline": "LightGBM v1",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.1009,
+      "P@100": 0.19,
+      "Brier": 0.03889,
+      "count_MAE": 6.51
+    },
+    {
+      "baseline": "LightGBM v2",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0962,
+      "P@100": 0.09,
+      "Brier": 0.03928,
+      "count_MAE": 5.37
+    }
+  ],
+  "all_rows": [
+    {
+      "baseline": "B0 GlobalRate",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.0359,
+      "P@100": 0.03,
+      "Brier": 0.03469,
+      "count_MAE": 13.61
+    },
+    {
+      "baseline": "B1 Persistence",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.1943,
+      "P@100": 0.34,
+      "Brier": 0.04096,
+      "count_MAE": 5.54
+    },
+    {
+      "baseline": "B2 SeasonalNaive",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.0392,
+      "P@100": 0.01,
+      "Brier": 0.05466,
+      "count_MAE": 7.75
+    },
+    {
+      "baseline": "B3 POWeekRate",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.0712,
+      "P@100": 0.12,
+      "Brier": 0.03408,
+      "count_MAE": 8.02
+    },
+    {
+      "baseline": "B0 GlobalRate",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.0363,
+      "P@100": 0.03,
+      "Brier": 0.03507,
+      "count_MAE": 13.46
+    },
+    {
+      "baseline": "B1 Persistence",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.085,
+      "P@100": 0.21,
+      "Brier": 0.05311,
+      "count_MAE": 8.59
+    },
+    {
+      "baseline": "B2 SeasonalNaive",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.0396,
+      "P@100": 0.03,
+      "Brier": 0.05537,
+      "count_MAE": 7.73
+    },
+    {
+      "baseline": "B3 POWeekRate",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.0721,
+      "P@100": 0.13,
+      "Brier": 0.03445,
+      "count_MAE": 7.85
+    },
+    {
+      "baseline": "B0 GlobalRate",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0413,
+      "P@100": 0.03,
+      "Brier": 0.03959,
+      "count_MAE": 12.43
+    },
+    {
+      "baseline": "B1 Persistence",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0478,
+      "P@100": 0.16,
+      "Brier": 0.05621,
+      "count_MAE": 17.0
+    },
+    {
+      "baseline": "B2 SeasonalNaive",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0454,
+      "P@100": 0.11,
+      "Brier": 0.06369,
+      "count_MAE": 7.31
+    },
+    {
+      "baseline": "B3 POWeekRate",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0772,
+      "P@100": 0.12,
+      "Brier": 0.03887,
+      "count_MAE": 7.42
+    },
+    {
+      "baseline": "LightGBM v1",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.3825,
+      "P@100": 0.75,
+      "Brier": 0.02694,
+      "count_MAE": 3.78
+    },
+    {
+      "baseline": "LightGBM v2",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.3791,
+      "P@100": 0.78,
+      "Brier": 0.02703,
+      "count_MAE": 3.78
+    },
+    {
+      "baseline": "LightGBM v1",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.2357,
+      "P@100": 0.66,
+      "Brier": 0.03099,
+      "count_MAE": 4.48
+    },
+    {
+      "baseline": "LightGBM v2",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.2324,
+      "P@100": 0.67,
+      "Brier": 0.03111,
+      "count_MAE": 4.48
+    },
+    {
+      "baseline": "LightGBM v1",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.1009,
+      "P@100": 0.19,
+      "Brier": 0.03889,
+      "count_MAE": 6.51
+    },
+    {
+      "baseline": "LightGBM v2",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0962,
+      "P@100": 0.09,
+      "Brier": 0.03928,
+      "count_MAE": 5.37
+    }
+  ],
+  "metric_tables": {
+    "PR-AUC": {
+      "1": {
+        "B0 GlobalRate": 0.0359,
+        "B1 Persistence": 0.1943,
+        "B2 SeasonalNaive": 0.0392,
+        "B3 POWeekRate": 0.0712,
+        "LightGBM v1": 0.3825,
+        "LightGBM v2": 0.3791
+      },
+      "2": {
+        "B0 GlobalRate": 0.0363,
+        "B1 Persistence": 0.085,
+        "B2 SeasonalNaive": 0.0396,
+        "B3 POWeekRate": 0.0721,
+        "LightGBM v1": 0.2357,
+        "LightGBM v2": 0.2324
+      },
+      "12": {
+        "B0 GlobalRate": 0.0413,
+        "B1 Persistence": 0.0478,
+        "B2 SeasonalNaive": 0.0454,
+        "B3 POWeekRate": 0.0772,
+        "LightGBM v1": 0.1009,
+        "LightGBM v2": 0.0962
+      }
+    },
+    "P@100": {
+      "1": {
+        "B0 GlobalRate": 0.03,
+        "B1 Persistence": 0.34,
+        "B2 SeasonalNaive": 0.01,
+        "B3 POWeekRate": 0.12,
+        "LightGBM v1": 0.75,
+        "LightGBM v2": 0.78
+      },
+      "2": {
+        "B0 GlobalRate": 0.03,
+        "B1 Persistence": 0.21,
+        "B2 SeasonalNaive": 0.03,
+        "B3 POWeekRate": 0.13,
+        "LightGBM v1": 0.66,
+        "LightGBM v2": 0.67
+      },
+      "12": {
+        "B0 GlobalRate": 0.03,
+        "B1 Persistence": 0.16,
+        "B2 SeasonalNaive": 0.11,
+        "B3 POWeekRate": 0.12,
+        "LightGBM v1": 0.19,
+        "LightGBM v2": 0.09
+      }
+    },
+    "Brier": {
+      "1": {
+        "B0 GlobalRate": 0.03469,
+        "B1 Persistence": 0.04096,
+        "B2 SeasonalNaive": 0.05466,
+        "B3 POWeekRate": 0.03408,
+        "LightGBM v1": 0.02694,
+        "LightGBM v2": 0.02703
+      },
+      "2": {
+        "B0 GlobalRate": 0.03507,
+        "B1 Persistence": 0.05311,
+        "B2 SeasonalNaive": 0.05537,
+        "B3 POWeekRate": 0.03445,
+        "LightGBM v1": 0.03099,
+        "LightGBM v2": 0.03111
+      },
+      "12": {
+        "B0 GlobalRate": 0.03959,
+        "B1 Persistence": 0.05621,
+        "B2 SeasonalNaive": 0.06369,
+        "B3 POWeekRate": 0.03887,
+        "LightGBM v1": 0.03889,
+        "LightGBM v2": 0.03928
+      }
+    },
+    "count_MAE": {
+      "1": {
+        "B0 GlobalRate": 13.61,
+        "B1 Persistence": 5.54,
+        "B2 SeasonalNaive": 7.75,
+        "B3 POWeekRate": 8.02,
+        "LightGBM v1": 3.78,
+        "LightGBM v2": 3.78
+      },
+      "2": {
+        "B0 GlobalRate": 13.46,
+        "B1 Persistence": 8.59,
+        "B2 SeasonalNaive": 7.73,
+        "B3 POWeekRate": 7.85,
+        "LightGBM v1": 4.48,
+        "LightGBM v2": 4.48
+      },
+      "12": {
+        "B0 GlobalRate": 12.43,
+        "B1 Persistence": 17.0,
+        "B2 SeasonalNaive": 7.31,
+        "B3 POWeekRate": 7.42,
+        "LightGBM v1": 6.51,
+        "LightGBM v2": 5.37
+      }
+    }
+  },
+  "po_breakdown_v2": {
+    "h=1": {
+      "PO1: Svenskegrensen til J\u00e6ren": 0.16307,
+      "PO2: Ryfylket": 0.23902,
+      "PO3: Karm\u00f8y til Sotra": 0.44649,
+      "PO4: Nordhord. til Stadt": 0.48381,
+      "PO5: Stadt til Hustadvika": 0.23858,
+      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.4525,
+      "PO7: N-Tr\u00f8nd. med Bindal": 0.27653,
+      "PO8: Helgeland til Bod\u00f8": 0.215,
+      "PO9: Vestfjorden og Vester\u00e5len": 0.27936,
+      "PO10: And\u00f8ya til Senja": 0.24487,
+      "PO11: Kval\u00f8ya til Loppa": 0.62348,
+      "PO12: Vest-Finnmark": 0.27902,
+      "PO13: \u00d8st-Finnmark": NaN
+    },
+    "h=2": {
+      "PO1: Svenskegrensen til J\u00e6ren": 0.04236,
+      "PO2: Ryfylket": 0.14184,
+      "PO3: Karm\u00f8y til Sotra": 0.31617,
+      "PO4: Nordhord. til Stadt": 0.31206,
+      "PO5: Stadt til Hustadvika": 0.11449,
+      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.29201,
+      "PO7: N-Tr\u00f8nd. med Bindal": 0.10146,
+      "PO8: Helgeland til Bod\u00f8": 0.12271,
+      "PO9: Vestfjorden og Vester\u00e5len": 0.12044,
+      "PO10: And\u00f8ya til Senja": 0.1943,
+      "PO11: Kval\u00f8ya til Loppa": 0.5082,
+      "PO12: Vest-Finnmark": 0.10711,
+      "PO13: \u00d8st-Finnmark": NaN
+    },
+    "h=12": {
+      "PO1: Svenskegrensen til J\u00e6ren": 0.00855,
+      "PO2: Ryfylket": 0.10003,
+      "PO3: Karm\u00f8y til Sotra": 0.19683,
+      "PO4: Nordhord. til Stadt": 0.11063,
+      "PO5: Stadt til Hustadvika": 0.08268,
+      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.17408,
+      "PO7: N-Tr\u00f8nd. med Bindal": 0.05479,
+      "PO8: Helgeland til Bod\u00f8": 0.11387,
+      "PO9: Vestfjorden og Vester\u00e5len": 0.08451,
+      "PO10: And\u00f8ya til Senja": 0.09341,
+      "PO11: Kval\u00f8ya til Loppa": 0.07849,
+      "PO12: Vest-Finnmark": 0.04889,
+      "PO13: \u00d8st-Finnmark": NaN
+    }
+  },
+  "training": {
+    "LightGBM v1": {
+      "h=1": {
+        "best_params": {
+          "learning_rate": 0.05,
+          "num_leaves": 31,
+          "min_data_in_leaf": 100,
+          "feature_fraction": 0.9,
+          "bagging_fraction": 0.9,
+          "bagging_freq": 5,
+          "seed": 42
+        },
+        "best_iter": 209,
+        "inner_val_pr_auc": 0.44397908261514674
+      },
+      "h=2": {
+        "best_params": {
+          "learning_rate": 0.03,
+          "num_leaves": 63,
+          "min_data_in_leaf": 50,
+          "feature_fraction": 0.9,
+          "bagging_fraction": 0.9,
+          "bagging_freq": 5,
+          "seed": 42
+        },
+        "best_iter": 240,
+        "inner_val_pr_auc": 0.28306731239568905
+      },
+      "h=12": {
+        "best_params": {
+          "learning_rate": 0.05,
+          "num_leaves": 127,
+          "min_data_in_leaf": 500,
+          "feature_fraction": 0.9,
+          "bagging_fraction": 0.9,
+          "bagging_freq": 5,
+          "seed": 42
+        },
+        "best_iter": 128,
+        "inner_val_pr_auc": 0.11517812787075028
+      }
+    },
+    "LightGBM v2": {
+      "h=1": {
+        "best_params": {
+          "learning_rate": 0.05,
+          "num_leaves": 31,
+          "min_data_in_leaf": 100,
+          "feature_fraction": 0.9,
+          "bagging_fraction": 0.9,
+          "bagging_freq": 5,
+          "seed": 42
+        },
+        "best_iter": 196,
+        "inner_val_pr_auc": 0.4422904287552624
+      },
+      "h=2": {
+        "best_params": {
+          "learning_rate": 0.05,
+          "num_leaves": 63,
+          "min_data_in_leaf": 200,
+          "feature_fraction": 0.9,
+          "bagging_fraction": 0.9,
+          "bagging_freq": 5,
+          "seed": 42
+        },
+        "best_iter": 170,
+        "inner_val_pr_auc": 0.2818716942199108
+      },
+      "h=12": {
+        "best_params": {
+          "learning_rate": 0.03,
+          "num_leaves": 63,
+          "min_data_in_leaf": 50,
+          "feature_fraction": 0.9,
+          "bagging_fraction": 0.9,
+          "bagging_freq": 5,
+          "seed": 42
+        },
+        "best_iter": 143,
+        "inner_val_pr_auc": 0.11658743217422493
+      }
+    }
+  },
+  "feature_columns": {
+    "v1": [
+      "FEMALEADULT",
+      "MOBILELICE",
+      "PERSISTENTLICE",
+      "SEATEMPERATURE",
+      "LICELIMITWEEK",
+      "PRODUCTIONAREAID",
+      "target_iso_week",
+      "site_age_weeks",
+      "BREACH_lag1",
+      "BREACH_lag2",
+      "BREACH_lag4",
+      "BREACH_lag8",
+      "FEMALEADULT_lag1",
+      "FEMALEADULT_lag2",
+      "FEMALEADULT_lag4",
+      "FEMALEADULT_lag8",
+      "MOBILELICE_lag1",
+      "MOBILELICE_lag2",
+      "MOBILELICE_lag4",
+      "MOBILELICE_lag8",
+      "SEATEMPERATURE_lag1",
+      "SEATEMPERATURE_lag2",
+      "SEATEMPERATURE_lag4",
+      "SEATEMPERATURE_lag8",
+      "FEMALEADULT_roll4_mean",
+      "FEMALEADULT_roll4_max",
+      "FEMALEADULT_roll8_mean",
+      "FEMALEADULT_roll8_max",
+      "FEMALEADULT_roll12_mean",
+      "FEMALEADULT_roll12_max",
+      "MOBILELICE_roll4_mean",
+      "MOBILELICE_roll4_max",
+      "MOBILELICE_roll8_mean",
+      "MOBILELICE_roll8_max",
+      "MOBILELICE_roll12_mean",
+      "MOBILELICE_roll12_max",
+      "degree_weeks_roll12",
+      "treat_chem",
+      "treat_mech",
+      "treat_bio",
+      "treat_chem_roll4",
+      "treat_chem_roll8",
+      "treat_chem_roll12",
+      "treat_mech_roll4",
+      "treat_mech_roll8",
+      "treat_mech_roll12",
+      "treat_bio_roll4",
+      "treat_bio_roll8",
+      "treat_bio_roll12",
+      "days_since_chem",
+      "days_since_mech",
+      "days_since_bio"
+    ],
+    "v2": [
+      "FEMALEADULT",
+      "MOBILELICE",
+      "PERSISTENTLICE",
+      "SEATEMPERATURE",
+      "LICELIMITWEEK",
+      "PRODUCTIONAREAID",
+      "target_iso_week",
+      "site_age_weeks",
+      "BREACH_lag1",
+      "BREACH_lag2",
+      "BREACH_lag4",
+      "BREACH_lag8",
+      "FEMALEADULT_lag1",
+      "FEMALEADULT_lag2",
+      "FEMALEADULT_lag4",
+      "FEMALEADULT_lag8",
+      "MOBILELICE_lag1",
+      "MOBILELICE_lag2",
+      "MOBILELICE_lag4",
+      "MOBILELICE_lag8",
+      "SEATEMPERATURE_lag1",
+      "SEATEMPERATURE_lag2",
+      "SEATEMPERATURE_lag4",
+      "SEATEMPERATURE_lag8",
+      "FEMALEADULT_roll4_mean",
+      "FEMALEADULT_roll4_max",
+      "FEMALEADULT_roll8_mean",
+      "FEMALEADULT_roll8_max",
+      "FEMALEADULT_roll12_mean",
+      "FEMALEADULT_roll12_max",
+      "MOBILELICE_roll4_mean",
+      "MOBILELICE_roll4_max",
+      "MOBILELICE_roll8_mean",
+      "MOBILELICE_roll8_max",
+      "MOBILELICE_roll12_mean",
+      "MOBILELICE_roll12_max",
+      "degree_weeks_roll12",
+      "treat_chem",
+      "treat_mech",
+      "treat_bio",
+      "treat_chem_roll4",
+      "treat_chem_roll8",
+      "treat_chem_roll12",
+      "treat_mech_roll4",
+      "treat_mech_roll8",
+      "treat_mech_roll12",
+      "treat_bio_roll4",
+      "treat_bio_roll8",
+      "treat_bio_roll12",
+      "days_since_chem",
+      "days_since_mech",
+      "days_since_bio",
+      "bio_active",
+      "weeks_since_last_cold"
+    ]
+  },
+  "top_features": {
+    "LightGBM v1": {
+      "h=1": {
+        "FEMALEADULT": 285573.0,
+        "FEMALEADULT_roll4_max": 56234.0,
+        "MOBILELICE": 52204.0,
+        "target_iso_week": 39755.0,
+        "FEMALEADULT_roll8_max": 28908.0,
+        "site_age_weeks": 18514.0,
+        "FEMALEADULT_roll12_max": 16864.0,
+        "MOBILELICE_roll4_mean": 16171.0,
+        "MOBILELICE_roll4_max": 14663.0,
+        "LICELIMITWEEK": 7890.0
+      },
+      "h=2": {
+        "FEMALEADULT": 190435.0,
+        "MOBILELICE": 96956.0,
+        "FEMALEADULT_roll4_max": 89173.0,
+        "MOBILELICE_roll4_max": 80761.0,
+        "target_iso_week": 74354.0,
+        "FEMALEADULT_roll8_max": 62797.0,
+        "site_age_weeks": 39520.0,
+        "FEMALEADULT_roll12_max": 35480.0,
+        "PRODUCTIONAREAID": 18137.0,
+        "FEMALEADULT_roll8_mean": 17925.0
+      },
+      "h=12": {
+        "target_iso_week": 64471.0,
+        "site_age_weeks": 47080.0,
+        "PRODUCTIONAREAID": 30230.0,
+        "MOBILELICE_roll4_max": 21173.0,
+        "FEMALEADULT_roll8_max": 20060.0,
+        "FEMALEADULT_roll12_max": 19407.0,
+        "days_since_chem": 16734.0,
+        "MOBILELICE_roll8_max": 16702.0,
+        "days_since_bio": 16622.0,
+        "MOBILELICE_roll8_mean": 14714.0
+      }
+    },
+    "LightGBM v2": {
+      "h=1": {
+        "FEMALEADULT": 311108.0,
+        "MOBILELICE": 43295.0,
+        "target_iso_week": 39818.0,
+        "FEMALEADULT_roll4_max": 31516.0,
+        "FEMALEADULT_roll8_max": 31480.0,
+        "MOBILELICE_roll4_mean": 24150.0,
+        "site_age_weeks": 18969.0,
+        "FEMALEADULT_roll12_max": 13895.0,
+        "MOBILELICE_roll4_max": 13666.0,
+        "LICELIMITWEEK": 8101.0
+      },
+      "h=2": {
+        "FEMALEADULT": 117184.0,
+        "FEMALEADULT_roll4_max": 63175.0,
+        "MOBILELICE": 53954.0,
+        "target_iso_week": 51116.0,
+        "MOBILELICE_roll4_max": 49589.0,
+        "FEMALEADULT_roll8_max": 28810.0,
+        "FEMALEADULT_roll12_max": 27291.0,
+        "site_age_weeks": 22833.0,
+        "FEMALEADULT_roll8_mean": 11940.0,
+        "PRODUCTIONAREAID": 11828.0
+      },
+      "h=12": {
+        "target_iso_week": 81588.0,
+        "site_age_weeks": 67428.0,
+        "PRODUCTIONAREAID": 38575.0,
+        "FEMALEADULT_roll8_max": 36987.0,
+        "FEMALEADULT_roll12_max": 35418.0,
+        "MOBILELICE_roll4_max": 28828.0,
+        "FEMALEADULT_roll12_mean": 23217.0,
+        "days_since_bio": 21997.0,
+        "MOBILELICE_roll8_max": 20678.0,
+        "MOBILELICE_roll8_mean": 19782.0
+      }
+    }
+  },
+  "bio_feature_ranks_v2": [
+    {
+      "horizon": 1,
+      "bio_active_rank": 46,
+      "weeks_since_last_cold_rank": 42,
+      "bio_active_gain": 406.53740215301514,
+      "weeks_since_last_cold_gain": 858.6413159370422
+    },
+    {
+      "horizon": 2,
+      "bio_active_rank": 47,
+      "weeks_since_last_cold_rank": 30,
+      "bio_active_gain": 649.0538759231567,
+      "weeks_since_last_cold_gain": 3065.1662125587463
+    },
+    {
+      "horizon": 12,
+      "bio_active_rank": 42,
+      "weeks_since_last_cold_rank": 19,
+      "bio_active_gain": 1318.632695198059,
+      "weeks_since_last_cold_gain": 6313.853899002075
+    }
+  ]
+}
