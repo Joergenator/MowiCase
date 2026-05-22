@@ -1,0 +1,258 @@
+{
+  "horizons": [
+    1,
+    2,
+    12
+  ],
+  "summary_rows": [
+    {
+      "baseline": "B0 GlobalRate",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.0359,
+      "P@100": 0.03,
+      "Brier": 0.03469,
+      "count_MAE": 13.61
+    },
+    {
+      "baseline": "B1 Persistence",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.1943,
+      "P@100": 0.34,
+      "Brier": 0.04096,
+      "count_MAE": 5.54
+    },
+    {
+      "baseline": "B2 SeasonalNaive",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.0392,
+      "P@100": 0.01,
+      "Brier": 0.05466,
+      "count_MAE": 7.75
+    },
+    {
+      "baseline": "B3 POWeekRate",
+      "horizon": 1,
+      "n_test": 29077,
+      "pos_rate": 0.0359,
+      "PR-AUC": 0.0712,
+      "P@100": 0.12,
+      "Brier": 0.03408,
+      "count_MAE": 8.02
+    },
+    {
+      "baseline": "B0 GlobalRate",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.0363,
+      "P@100": 0.03,
+      "Brier": 0.03507,
+      "count_MAE": 13.46
+    },
+    {
+      "baseline": "B1 Persistence",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.085,
+      "P@100": 0.21,
+      "Brier": 0.05311,
+      "count_MAE": 8.59
+    },
+    {
+      "baseline": "B2 SeasonalNaive",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.0396,
+      "P@100": 0.03,
+      "Brier": 0.05537,
+      "count_MAE": 7.73
+    },
+    {
+      "baseline": "B3 POWeekRate",
+      "horizon": 2,
+      "n_test": 28487,
+      "pos_rate": 0.0363,
+      "PR-AUC": 0.0721,
+      "P@100": 0.13,
+      "Brier": 0.03445,
+      "count_MAE": 7.85
+    },
+    {
+      "baseline": "B0 GlobalRate",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0413,
+      "P@100": 0.03,
+      "Brier": 0.03959,
+      "count_MAE": 12.43
+    },
+    {
+      "baseline": "B1 Persistence",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0478,
+      "P@100": 0.16,
+      "Brier": 0.05621,
+      "count_MAE": 17.0
+    },
+    {
+      "baseline": "B2 SeasonalNaive",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0454,
+      "P@100": 0.11,
+      "Brier": 0.06369,
+      "count_MAE": 7.31
+    },
+    {
+      "baseline": "B3 POWeekRate",
+      "horizon": 12,
+      "n_test": 23039,
+      "pos_rate": 0.0413,
+      "PR-AUC": 0.0772,
+      "P@100": 0.12,
+      "Brier": 0.03887,
+      "count_MAE": 7.42
+    }
+  ],
+  "metric_tables": {
+    "PR-AUC": {
+      "1": {
+        "B0 GlobalRate": 0.0359,
+        "B1 Persistence": 0.1943,
+        "B2 SeasonalNaive": 0.0392,
+        "B3 POWeekRate": 0.0712
+      },
+      "2": {
+        "B0 GlobalRate": 0.0363,
+        "B1 Persistence": 0.085,
+        "B2 SeasonalNaive": 0.0396,
+        "B3 POWeekRate": 0.0721
+      },
+      "12": {
+        "B0 GlobalRate": 0.0413,
+        "B1 Persistence": 0.0478,
+        "B2 SeasonalNaive": 0.0454,
+        "B3 POWeekRate": 0.0772
+      }
+    },
+    "P@100": {
+      "1": {
+        "B0 GlobalRate": 0.03,
+        "B1 Persistence": 0.34,
+        "B2 SeasonalNaive": 0.01,
+        "B3 POWeekRate": 0.12
+      },
+      "2": {
+        "B0 GlobalRate": 0.03,
+        "B1 Persistence": 0.21,
+        "B2 SeasonalNaive": 0.03,
+        "B3 POWeekRate": 0.13
+      },
+      "12": {
+        "B0 GlobalRate": 0.03,
+        "B1 Persistence": 0.16,
+        "B2 SeasonalNaive": 0.11,
+        "B3 POWeekRate": 0.12
+      }
+    },
+    "Brier": {
+      "1": {
+        "B0 GlobalRate": 0.03469,
+        "B1 Persistence": 0.04096,
+        "B2 SeasonalNaive": 0.05466,
+        "B3 POWeekRate": 0.03408
+      },
+      "2": {
+        "B0 GlobalRate": 0.03507,
+        "B1 Persistence": 0.05311,
+        "B2 SeasonalNaive": 0.05537,
+        "B3 POWeekRate": 0.03445
+      },
+      "12": {
+        "B0 GlobalRate": 0.03959,
+        "B1 Persistence": 0.05621,
+        "B2 SeasonalNaive": 0.06369,
+        "B3 POWeekRate": 0.03887
+      }
+    },
+    "count_MAE": {
+      "1": {
+        "B0 GlobalRate": 13.61,
+        "B1 Persistence": 5.54,
+        "B2 SeasonalNaive": 7.75,
+        "B3 POWeekRate": 8.02
+      },
+      "2": {
+        "B0 GlobalRate": 13.46,
+        "B1 Persistence": 8.59,
+        "B2 SeasonalNaive": 7.73,
+        "B3 POWeekRate": 7.85
+      },
+      "12": {
+        "B0 GlobalRate": 12.43,
+        "B1 Persistence": 17.0,
+        "B2 SeasonalNaive": 7.31,
+        "B3 POWeekRate": 7.42
+      }
+    }
+  },
+  "po_breakdown": {
+    "h=1w": {
+      "PO1: Svenskegrensen til J\u00e6ren": 0.009,
+      "PO2: Ryfylket": 0.103,
+      "PO3: Karm\u00f8y til Sotra": 0.062,
+      "PO4: Nordhord. til Stadt": 0.059,
+      "PO5: Stadt til Hustadvika": 0.055,
+      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.123,
+      "PO7: N-Tr\u00f8nd. med Bindal": 0.046,
+      "PO8: Helgeland til Bod\u00f8": 0.082,
+      "PO9: Vestfjorden og Vester\u00e5len": 0.057,
+      "PO10: And\u00f8ya til Senja": 0.066,
+      "PO11: Kval\u00f8ya til Loppa": 0.05,
+      "PO12: Vest-Finnmark": 0.021,
+      "PO13: \u00d8st-Finnmark": NaN
+    },
+    "h=2w": {
+      "PO1: Svenskegrensen til J\u00e6ren": 0.009,
+      "PO2: Ryfylket": 0.103,
+      "PO3: Karm\u00f8y til Sotra": 0.065,
+      "PO4: Nordhord. til Stadt": 0.062,
+      "PO5: Stadt til Hustadvika": 0.055,
+      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.124,
+      "PO7: N-Tr\u00f8nd. med Bindal": 0.046,
+      "PO8: Helgeland til Bod\u00f8": 0.082,
+      "PO9: Vestfjorden og Vester\u00e5len": 0.057,
+      "PO10: And\u00f8ya til Senja": 0.066,
+      "PO11: Kval\u00f8ya til Loppa": 0.05,
+      "PO12: Vest-Finnmark": 0.021,
+      "PO13: \u00d8st-Finnmark": NaN
+    },
+    "h=12w": {
+      "PO1: Svenskegrensen til J\u00e6ren": 0.003,
+      "PO2: Ryfylket": 0.108,
+      "PO3: Karm\u00f8y til Sotra": 0.077,
+      "PO4: Nordhord. til Stadt": 0.067,
+      "PO5: Stadt til Hustadvika": 0.055,
+      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.127,
+      "PO7: N-Tr\u00f8nd. med Bindal": 0.049,
+      "PO8: Helgeland til Bod\u00f8": 0.084,
+      "PO9: Vestfjorden og Vester\u00e5len": 0.061,
+      "PO10: And\u00f8ya til Senja": 0.068,
+      "PO11: Kval\u00f8ya til Loppa": 0.057,
+      "PO12: Vest-Finnmark": 0.023,
+      "PO13: \u00d8st-Finnmark": NaN
+    }
+  }
+}

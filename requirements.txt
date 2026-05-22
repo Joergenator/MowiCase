@@ -10,3 +10,6 @@ ipykernel>=6.29
 anthropic>=0.40
 shap>=0.46
 python-dotenv>=1.0
+pytest>=8.0
+tabulate>=0.9
+jupytext>=1.16
