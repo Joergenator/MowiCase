@@ -192,6 +192,28 @@ class LightGBMBreach(Baseline):
             raise RuntimeError("Model not fit — call .fit(train_df) first.")
         return self.booster_.predict(df[list(self.feature_cols)])
 
+    def predict_contributions(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Per-sample feature contributions (LightGBM SHAP-style decomposition).
+
+        Calls `booster.predict(X, pred_contrib=True)` — no external `shap`
+        dependency. Returns one row per input sample with one column per
+        feature plus a trailing `_bias` column. Per-row invariant:
+            row.sum() = raw logit prediction
+            sigmoid(row.sum()) ≈ predict_proba(df)[i]
+
+        Used by the step-6 forecast notebook to explain "why is this site
+        at risk" and by the agent's `predict_drivers` tool. DataFrame
+        return (not ndarray) so callers can do named-column lookup
+        ("which feature pushed this site up by the most?").
+        """
+        if self.booster_ is None:
+            raise RuntimeError("Model not fit — call .fit(train_df) first.")
+        raw = self.booster_.predict(
+            df[list(self.feature_cols)], pred_contrib=True,
+        )
+        cols = list(self.feature_cols) + ["_bias"]
+        return pd.DataFrame(raw, index=df.index, columns=cols)
+
     def feature_importance(self, importance_type: str = "gain") -> pd.Series:
         """Return feature importances as a Series indexed by feature name."""
         if self.booster_ is None:

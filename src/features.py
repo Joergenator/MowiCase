@@ -210,6 +210,92 @@ def add_cleaner_fish_features(lice: pd.DataFrame) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
+# Neighbor features — spatial diffusion signal from nearby sites
+# ---------------------------------------------------------------------------
+
+# Lice drift between farms in the same fjord system on time-scales of days.
+# These features summarise what neighboring sites are seeing in the same week.
+# Cross-site, not cross-time — leakage-safe (no future info is consulted; the
+# only data used for a row at (site A, week T) is other sites' week-T values).
+NEIGHBOR_RADII_KM = (5.0, 10.0)
+EARTH_R_KM = 6371.0088
+NEIGHBOR_FEATURE_COLS = tuple(
+    f"neighbors_{int(r)}km_{agg}"
+    for r in NEIGHBOR_RADII_KM
+    for agg in ("mean_FA", "max_FA", "n_breaching", "mean_MOBILE")
+)
+
+
+def add_neighbor_features(
+    lice: pd.DataFrame,
+    radii_km: tuple = NEIGHBOR_RADII_KM,
+) -> pd.DataFrame:
+    """For each (site, week_start), aggregate neighbor sites within R km.
+
+    For each radius R produces four features:
+      - `neighbors_{R}km_mean_FA`: mean FEMALEADULT of neighbors this week
+      - `neighbors_{R}km_max_FA`: max FEMALEADULT of neighbors this week
+      - `neighbors_{R}km_mean_MOBILE`: mean MOBILELICE of neighbors this week
+      - `neighbors_{R}km_n_breaching`: count of breaching neighbors this week
+
+    Implementation: per-week BallTree on (lat, lon) using haversine. NaN-safe:
+    sites with no neighbors get NaN for the means, 0 for the count.
+    """
+    from sklearn.neighbors import BallTree  # local import; only used here
+
+    out = lice.copy().reset_index(drop=True)
+    n = len(out)
+
+    # Pre-allocate result arrays — fill positionally per week
+    arrays: dict[str, np.ndarray] = {}
+    for r in radii_km:
+        arrays[f"neighbors_{int(r)}km_mean_FA"] = np.full(n, np.nan)
+        arrays[f"neighbors_{int(r)}km_max_FA"] = np.full(n, np.nan)
+        arrays[f"neighbors_{int(r)}km_mean_MOBILE"] = np.full(n, np.nan)
+        arrays[f"neighbors_{int(r)}km_n_breaching"] = np.zeros(n, dtype=float)
+
+    for _week, week_df in out.groupby("WEEK_START", sort=False):
+        valid = week_df.dropna(subset=["LATITUDE", "LONGITUDE"])
+        if len(valid) < 2:
+            continue
+        positions = valid.index.to_numpy()
+        coords_rad = np.radians(valid[["LATITUDE", "LONGITUDE"]].to_numpy())
+        tree = BallTree(coords_rad, metric="haversine")
+
+        fa = valid["FEMALEADULT"].to_numpy(dtype=float)
+        ml = valid["MOBILELICE"].to_numpy(dtype=float)
+        breach = valid["BREACH"].fillna(False).to_numpy(dtype=bool)
+
+        for r in radii_km:
+            radius_rad = r / EARTH_R_KM
+            indices = tree.query_radius(coords_rad, r=radius_rad)
+            r_int = int(r)
+            mean_fa_col = arrays[f"neighbors_{r_int}km_mean_FA"]
+            max_fa_col = arrays[f"neighbors_{r_int}km_max_FA"]
+            mean_ml_col = arrays[f"neighbors_{r_int}km_mean_MOBILE"]
+            nbr_col = arrays[f"neighbors_{r_int}km_n_breaching"]
+            for i, nbrs in enumerate(indices):
+                others = nbrs[nbrs != i]
+                if len(others) == 0:
+                    continue
+                pos = positions[i]
+                fa_n = fa[others]
+                ml_n = ml[others]
+                fa_valid = fa_n[~np.isnan(fa_n)]
+                ml_valid = ml_n[~np.isnan(ml_n)]
+                if len(fa_valid) > 0:
+                    mean_fa_col[pos] = fa_valid.mean()
+                    max_fa_col[pos] = fa_valid.max()
+                if len(ml_valid) > 0:
+                    mean_ml_col[pos] = ml_valid.mean()
+                nbr_col[pos] = float(breach[others].sum())
+
+    for name, arr in arrays.items():
+        out[name] = arr
+    return out
+
+
+# ---------------------------------------------------------------------------
 # Site cohort context
 # ---------------------------------------------------------------------------
 
@@ -273,6 +359,12 @@ FEATURE_COLUMNS_V2 = FEATURE_COLUMNS_V1 + (
     "weeks_since_last_cold",
 )
 
+# V3 adds neighbor-site spatial-diffusion features (step 6 extension).
+# Built on top of V1 — the cleaner-fish bio features in V2 are an orthogonal
+# experiment, kept separate so the v1 vs v3 comparison isolates the neighbor
+# signal cleanly.
+FEATURE_COLUMNS_V3 = FEATURE_COLUMNS_V1 + NEIGHBOR_FEATURE_COLS
+
 # Default alias for backwards compatibility with code that imports the
 # unversioned name (tests, the original model wrapper).
 FEATURE_COLUMNS = FEATURE_COLUMNS_V2
@@ -299,6 +391,7 @@ def build_inference_frame(
     aug = add_degree_weeks(aug)
     aug = add_treatment_features(aug, treatment)
     aug = add_cleaner_fish_features(aug)
+    aug = add_neighbor_features(aug)  # cross-site, same-week
     aug = add_site_age(aug)
 
     latest = (aug.sort_values(["SITENUMBER", "WEEK_START"])
@@ -332,6 +425,7 @@ def build_feature_frame(
     aug = add_degree_weeks(aug)
     aug = add_treatment_features(aug, treatment)
     aug = add_cleaner_fish_features(aug)  # must follow add_treatment_features
+    aug = add_neighbor_features(aug)
     aug = add_site_age(aug)
     sup = make_supervised_frame(aug, horizon=horizon, counted_only=counted_only)
     sup = add_target_week_features(sup)
