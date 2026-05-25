@@ -43,9 +43,16 @@ def _data() -> tuple[pd.DataFrame, pd.DataFrame]:
     return load_training_data()
 
 
-@lru_cache(maxsize=8)
-def _load_model(horizon: int) -> LightGBMBreach:
-    return LightGBMBreach.load(MODELS_DIR / f"lgbm_v1_h{horizon}.txt")
+@lru_cache(maxsize=16)
+def _load_model(horizon: int, version: str = "v1") -> LightGBMBreach:
+    """Load the persisted booster for a (version, horizon).
+
+    Supported versions: 'v1' (original 52 features) and 'v3' (v1 + neighbor
+    spatial-diffusion features added in step 6).
+    """
+    if version not in ("v1", "v3"):
+        raise ValueError(f"version must be 'v1' or 'v3', got {version!r}")
+    return LightGBMBreach.load(MODELS_DIR / f"lgbm_{version}_h{horizon}.txt")
 
 
 def _df_to_records(df: pd.DataFrame, limit: int = 50) -> list[dict]:
@@ -238,10 +245,14 @@ def pre_breach_signature(weeks_before: int = 4) -> dict:
 VALID_HORIZONS = (1, 2, 12)
 
 
-def predict_risk(horizon: int = 12, top_n: int = 20) -> dict:
-    """Score the latest available week per site with the LightGBM v1 model.
+def predict_risk(horizon: int = 12, top_n: int = 20,
+                 model_version: str = "v1") -> dict:
+    """Score the latest available week per site with the LightGBM model.
 
     `horizon` ∈ {1, 2, 12} — picks the matching booster.
+    `model_version` ∈ {'v1', 'v3'}:
+      - 'v1' (default): 52 features (lags, rolling, treatment, structural)
+      - 'v3': v1 + neighbor-site spatial-diffusion features (4 per radius, 2 radii)
     Returns the top `top_n` sites by predicted breach probability, along with
     the contextual fields a human reviewer wants to see (PO, lat/lon, recent
     FEMALEADULT, SEATEMP).
@@ -254,7 +265,7 @@ def predict_risk(horizon: int = 12, top_n: int = 20) -> dict:
 
     lice, treat = _data()
     inf = build_inference_frame(lice, treat, horizon=horizon)
-    model = _load_model(horizon)
+    model = _load_model(horizon, model_version)
     proba = model.predict_proba(inf)
     inf = inf.assign(predicted_breach_probability=proba)
 
@@ -272,13 +283,95 @@ def predict_risk(horizon: int = 12, top_n: int = 20) -> dict:
                       "LATITUDE": 4, "LONGITUDE": 4}))
     return {
         "horizon_weeks": horizon,
-        "model_version": "lightgbm_v1",
+        "model_version": f"lightgbm_{model_version}",
         "predict_from_week": str(inf["WEEK_START"].max().date()),
         "predict_for_week": str(out["target_week_start"].iloc[0].date()),
         "n_sites_scored": int(len(inf)),
         "commercial_only": True,
         "research_sites_excluded": len(RESEARCH_SITE_IDS),
         "top_sites": _df_to_records(out, limit=top_n),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Q5b: predict_drivers — explain WHY a single site is at risk
+# ---------------------------------------------------------------------------
+
+def predict_drivers(site_number: int, horizon: int = 12,
+                    top_n: int = 8, model_version: str = "v1") -> dict:
+    """Per-site breach-risk explanation: predicted probability + the top-N
+    feature contributions (positive and negative) from the LightGBM booster.
+
+    Uses LightGBM's native `pred_contrib=True` decomposition — no external
+    `shap` library. Per-row invariant: contributions sum + bias = the raw
+    logit, sigmoid of which is the predicted probability.
+
+    Returns the dominant drivers in BOTH directions:
+    - `top_positive`: features pushing predicted risk UP (the "why is this
+       site flagged" narrative)
+    - `top_negative`: features pulling predicted risk DOWN (gives the
+       agent something to caveat with — "high probability but mitigating
+       factors are X, Y")
+
+    Each contributor includes the FEATURE's current value alongside its
+    contribution magnitude, so the agent can produce coherent language like
+    "FEMALEADULT=0.42 contributed +0.31 to the logit".
+
+    HI research sites are excluded at the data layer (booster trained
+    commercial-only). Asking for an HI site returns an error.
+    """
+    if horizon not in VALID_HORIZONS:
+        raise ValueError(f"horizon must be one of {VALID_HORIZONS}, got {horizon}")
+
+    lice, treat = _data()
+    inf = build_inference_frame(lice, treat, horizon=horizon)
+    matched = inf[inf["SITENUMBER"] == int(site_number)]
+    if len(matched) == 0:
+        return {
+            "error": (
+                f"Site {site_number} is not in the commercial-only inference "
+                "frame. Either it's an HI research site (call `list_research_sites`) "
+                "or it had no recent activity to score."
+            ),
+            "horizon_weeks": horizon,
+        }
+    row = matched.iloc[[0]]
+
+    model = _load_model(horizon, model_version)
+    proba = float(model.predict_proba(row)[0])
+    contributions = model.predict_contributions(row).iloc[0]
+    bias = float(contributions["_bias"])
+
+    feature_contribs = contributions.drop("_bias")
+    # Sort by absolute contribution; split into positive and negative tails
+    by_abs = feature_contribs.abs().sort_values(ascending=False)
+    feature_values = row.iloc[0]
+
+    def _pack(feature: str) -> dict:
+        return {
+            "feature": feature,
+            "contribution": float(feature_contribs[feature]),
+            "feature_value": (None if pd.isna(feature_values.get(feature))
+                              else float(feature_values[feature])),
+        }
+
+    ranked = [_pack(f) for f in by_abs.index]
+    top_positive = [r for r in ranked if r["contribution"] > 0][:top_n]
+    top_negative = [r for r in ranked if r["contribution"] < 0][:top_n]
+
+    return {
+        "horizon_weeks": horizon,
+        "model_version": f"lightgbm_{model_version}",
+        "site_number": int(row["SITENUMBER"].iloc[0]),
+        "site_name": str(row["SITENAME"].iloc[0]),
+        "production_area_id": int(row["PRODUCTIONAREAID"].iloc[0]),
+        "production_area": str(row["PRODUCTIONAREA"].iloc[0]),
+        "predict_from_week": str(row["WEEK_START"].iloc[0].date()),
+        "predict_for_week": str(row["target_week_start"].iloc[0].date()),
+        "predicted_breach_probability": round(proba, 4),
+        "logit_bias": round(bias, 4),
+        "top_positive": top_positive,
+        "top_negative": top_negative,
     }
 
 
@@ -348,6 +441,7 @@ TOOL_REGISTRY = {
     "treatment_intensity": treatment_intensity,
     "pre_breach_signature": pre_breach_signature,
     "predict_risk": predict_risk,
+    "predict_drivers": predict_drivers,
     "sql": sql,
     "schema": schema,
     "read_findings": read_findings,

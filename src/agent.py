@@ -94,6 +94,9 @@ Tool strategy:
     * treatment_intensity → "production areas with highest treatment intensity"
     * pre_breach_signature → "what is visible before a breach"
     * predict_risk        → "which sites are most at risk in the coming weeks"
+    * predict_drivers     → "why is site X at risk" — call after predict_risk
+                            to explain the top hit, or any specific site the
+                            user asks about
 - For anything else, call `schema` first to see column names, then write a
   SELECT against vlice / vtreatment via the `sql` tool. SQL is DuckDB dialect.
 - Use `read_findings` when the user asks about patterns, trends, or
@@ -164,13 +167,36 @@ TOOL_SCHEMAS = [
                        "LightGBM model. Returns the top_n sites by predicted breach "
                        "probability for the chosen horizon. HI research sites are "
                        "excluded at the data layer; the booster is trained on "
-                       "commercial-only data.",
+                       "commercial-only data. Two model variants available: 'v1' "
+                       "(52 features, default) and 'v3' (v1 + neighbor-site "
+                       "spatial-diffusion features for lice drift between farms).",
         "input_schema": {
             "type": "object",
             "properties": {
                 "horizon": {"type": "integer", "enum": [1, 2, 12], "description": "Forecast horizon in weeks: 1, 2, or 12."},
                 "top_n": {"type": "integer", "description": "How many sites to return (default 20)."},
+                "model_version": {"type": "string", "enum": ["v1", "v3"], "description": "Which booster: 'v1' (52 features) or 'v3' (adds neighbor features). Default 'v1'."},
             },
+        },
+    },
+    {
+        "name": "predict_drivers",
+        "description": "Explain WHY a specific site is at risk. Returns the "
+                       "predicted breach probability for one site at one horizon "
+                       "plus the top-N feature contributions in both directions "
+                       "(features pushing risk up, features pulling it down). "
+                       "Each contributor includes the feature's current value so "
+                       "the answer can cite concrete numbers. Call after "
+                       "`predict_risk` when the user asks 'why is site X at risk'.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "site_number": {"type": "integer", "description": "SITENUMBER of the commercial site to explain."},
+                "horizon": {"type": "integer", "enum": [1, 2, 12], "description": "Forecast horizon in weeks: 1, 2, or 12. Default 12."},
+                "top_n": {"type": "integer", "description": "How many contributors per direction (default 8)."},
+                "model_version": {"type": "string", "enum": ["v1", "v3"], "description": "Which booster to explain — 'v1' or 'v3'. Default 'v1'."},
+            },
+            "required": ["site_number"],
         },
     },
     {

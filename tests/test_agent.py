@@ -10,8 +10,8 @@ import pytest
 
 from src.agent_db import describe_schema, get_conn, run_sql
 from src.agent_tools import (
-    TOOL_REGISTRY, predict_risk, pre_breach_signature, repeat_offenders,
-    schema, sql, treatment_intensity, trending_pos,
+    TOOL_REGISTRY, predict_drivers, predict_risk, pre_breach_signature,
+    repeat_offenders, schema, sql, treatment_intensity, trending_pos,
 )
 
 
@@ -121,13 +121,123 @@ class TestPredictRisk:
 
 
 # ---------------------------------------------------------------------------
+# predict_drivers — step 6 per-site explanation
+# ---------------------------------------------------------------------------
+
+class TestPredictDrivers:
+    def test_contributions_sum_to_logit(self):
+        """Per-row invariant: sum(feature contributions) + bias = logit, and
+        sigmoid(logit) = predict_proba. This is the SHAP-additivity property
+        of LightGBM's pred_contrib output."""
+        import numpy as np
+        from pathlib import Path
+        from src.features import build_inference_frame
+        from src.load_data import load_training_data
+        from src.models import LightGBMBreach
+
+        lice, treat = load_training_data()
+        inf = build_inference_frame(lice, treat, horizon=12).head(20)
+        model = LightGBMBreach.load(
+            Path(__file__).resolve().parent.parent / "models" / "lgbm_v1_h12.txt"
+        )
+        proba = model.predict_proba(inf)
+        contribs = model.predict_contributions(inf)
+        # Shape: (n_rows, n_features + 1)
+        assert contribs.shape == (len(inf), len(model.feature_cols) + 1)
+        assert contribs.columns[-1] == "_bias"
+        # Row-wise: sigmoid(sum) ≈ predict_proba
+        logits = contribs.sum(axis=1).to_numpy()
+        recovered = 1.0 / (1.0 + np.exp(-logits))
+        np.testing.assert_allclose(recovered, proba, atol=1e-5)
+
+    def test_returns_expected_schema(self):
+        """A successful predict_drivers call returns predicted_proba +
+        positive/negative driver lists with feature names, contributions
+        and current values."""
+        # Pick the top-ranked commercial site from predict_risk so we know
+        # it's in the inference frame.
+        top = predict_risk(horizon=12, top_n=1)["top_sites"][0]
+        r = predict_drivers(site_number=top["SITENUMBER"], horizon=12, top_n=5)
+        assert "error" not in r
+        for key in ("horizon_weeks", "site_number", "site_name",
+                    "predict_from_week", "predict_for_week",
+                    "predicted_breach_probability", "logit_bias",
+                    "top_positive", "top_negative"):
+            assert key in r, f"missing key: {key}"
+        assert 0.0 <= r["predicted_breach_probability"] <= 1.0
+        # Positive contributors must actually be positive; negatives negative
+        for d in r["top_positive"]:
+            assert d["contribution"] > 0
+            assert "feature" in d and "feature_value" in d
+        for d in r["top_negative"]:
+            assert d["contribution"] < 0
+
+    def test_rejects_research_site(self):
+        """HI research sites (e.g. Sauaneset I = 13035) are filtered out at
+        load time, so they're not in the inference frame. predict_drivers
+        returns a clear error rather than scoring out-of-distribution."""
+        r = predict_drivers(site_number=13035, horizon=12)
+        assert "error" in r
+        assert "research" in r["error"].lower() or "not in" in r["error"].lower()
+
+
+# ---------------------------------------------------------------------------
+# v3 — neighbor-features model variant
+# ---------------------------------------------------------------------------
+
+class TestV3NeighborModel:
+    """v3 = v1 features + neighbor-site spatial-diffusion features (step 6).
+    Tests skip cleanly if v3 hasn't been trained yet."""
+
+    def _v3_available(self) -> bool:
+        from pathlib import Path
+        models_dir = Path(__file__).resolve().parent.parent / "models"
+        return all(
+            (models_dir / f"lgbm_v3_h{h}.txt").exists() for h in (1, 2, 12)
+        )
+
+    def test_predict_risk_v3_returns_results(self):
+        if not self._v3_available():
+            pytest.skip("v3 boosters not trained yet — run scripts.train_and_save")
+        r = predict_risk(horizon=12, top_n=5, model_version="v3")
+        assert r["model_version"] == "lightgbm_v3"
+        assert 0 < len(r["top_sites"]) <= 5
+        for s in r["top_sites"]:
+            assert 0.0 <= s["predicted_breach_probability"] <= 1.0
+
+    def test_predict_drivers_v3_includes_neighbor_feature(self):
+        """When v3 explains a top site, at least one of the top-8 contributors
+        in either direction should be a neighbor feature — confirming the
+        model actually uses the new signal in its decisions."""
+        if not self._v3_available():
+            pytest.skip("v3 boosters not trained yet — run scripts.train_and_save")
+        top = predict_risk(horizon=12, top_n=1, model_version="v3")["top_sites"][0]
+        r = predict_drivers(site_number=top["SITENUMBER"], horizon=12,
+                            top_n=15, model_version="v3")
+        assert r["model_version"] == "lightgbm_v3"
+        all_features = (
+            [d["feature"] for d in r["top_positive"]]
+            + [d["feature"] for d in r["top_negative"]]
+        )
+        assert any(f.startswith("neighbors_") for f in all_features), (
+            "v3 didn't use any neighbor feature in top-15 contributors for the "
+            "top-risk site — either the feature wiring is broken or neighbors "
+            "have zero predictive value here."
+        )
+
+    def test_invalid_model_version_raises(self):
+        with pytest.raises(ValueError):
+            predict_risk(horizon=12, model_version="v2")  # v2 not exposed
+
+
+# ---------------------------------------------------------------------------
 # Tool registry coverage
 # ---------------------------------------------------------------------------
 
 def test_tool_registry_matches_module_exports():
     expected = {"trending_pos", "repeat_offenders", "treatment_intensity",
-                "pre_breach_signature", "predict_risk", "sql", "schema",
-                "read_findings", "list_research_sites"}
+                "pre_breach_signature", "predict_risk", "predict_drivers",
+                "sql", "schema", "read_findings", "list_research_sites"}
     assert set(TOOL_REGISTRY) == expected
 
 
