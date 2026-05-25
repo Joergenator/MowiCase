@@ -70,6 +70,79 @@ v3 makes more extreme predictions on a subset of sites where neighbors
 are also under pressure, and dampens predictions where v1 was picking
 up site-internal noise that the spatial context contradicts.
 
+
+
+## Cumulative model — "how many breaches in the next 12 weeks?"
+
+LightGBM **Poisson regression** trained with the v3 feature set (V1 + 8
+neighbor features). Target: `sum(BREACH) over t+1..t+12` —
+integer count, 0..12.
+
+- **Inner-val MAE (2024):** 0.462
+- **Predicted distribution across 1083 commercial sites:**
+  min 0.000 ·
+  median 0.012 ·
+  mean 0.068 ·
+  max 2.627
+
+Interpretation: an expected-count of 1.5 means "the model thinks this
+site will have, on average, 1.5 breach weeks across the next 12
+weeks." Unlike the binary point-prediction at week t+12 only,
+this score integrates risk over the full 12-week window.
+
+### Top-20 by cumulative expected count
+
+| SITENUMBER | SITENAME | PO | exp.count (next 12w) | recent FA |
+| --- | --- | --- | --- | --- |
+| 12071 | Ommundsteigen | PO2 | 2.63 | 0.17 |
+| 11625 | Langholmen | PO3 | 1.10 | 0.19 |
+| 15375 | Sørøyflesa | PO6 | 1.05 | 0.45 |
+| 10149 | Rafdal | PO3 | 0.98 | 0.77 |
+| 38997 | Ilsøya 2 | PO6 | 0.88 | 0.49 |
+| 37297 | Larstangen | PO11 | 0.86 | 0.22 |
+| 26595 | Djupevika | PO3 | 0.80 | 0.81 |
+| 13036 | Gjengane | PO3 | 0.78 | 0.02 |
+| 10652 | Vedbotn | PO12 | 0.78 | 0.25 |
+| 45211 | Saltskår | PO4 | 0.64 | 0.45 |
+| 11492 | Storevikholmen | PO3 | 0.63 | 0.37 |
+| 10213 | Naustneset | PO6 | 0.63 | 0.16 |
+| 38297 | Sør Gåsvær | PO8 | 0.61 | 0.23 |
+| 45081 | Langøya | PO8 | 0.60 | 0.21 |
+| 36737 | Hallsteinhamn I | PO9 | 0.57 | 0.11 |
+| 35377 | Kveitskjeret | PO6 | 0.51 | 0.98 |
+| 13782 | Helgeneshamn | PO9 | 0.50 | 0.38 |
+| 39997 | Helligvær Ø | PO9 | 0.50 | 0.32 |
+| 45072 | Bleket | PO4 | 0.50 | 0.36 |
+| 12380 | Langøya Kvaløya | PO6 | 0.48 | 0.23 |
+
+See `F6_top_sites_cumulative_count_w12.png` for the bar chart.
+
+### Limitation — the treatment-response cycle is implicit, not simulated
+
+This model predicts a **marginal expected count** given current state,
+averaged across historical analogous states. It does NOT simulate the
+breach -> treatment -> lower lice -> regrowth cycle forward in time.
+The training data already includes those dynamics, so the predicted
+count reflects *typical Mowi management* — 2.6 expected breach weeks
+for Ommundsteigen means "on average, historically similar states ended
+with 2.6 breaches across the next 12 weeks, including the typical
+treatments that followed each breach."
+
+What the model has indirect signal about (via existing features):
+- `days_since_chem`, `days_since_mech`, `days_since_bio` — where the site
+  is in the post-treatment recovery cycle.
+- `treat_*_roll12` — how aggressively the site has been managed recently.
+- `FEMALEADULT_roll8_mean` — whether lice levels are persistently elevated
+  vs an acute spike.
+
+What it CANNOT answer:
+- Counterfactual questions ("what if we treat 2 weeks earlier?").
+- Predictions under a changed management regime (e.g. if Mowi adopts
+  preventive treatment policies that diverge from historical patterns).
+
+A natural next step would be a sequential / hazard model that simulates
+each future week conditionally on a treatment policy. Out of scope here.
+
 ## Main drivers across the top-20 (v1)
 
 Feature most often ranked as the #1 positive contributor:
