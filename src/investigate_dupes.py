@@ -6,8 +6,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 from src.load_data import load_lice, load_treatment
 
-lice = load_lice(apply_cutoff=True)
-treat = load_treatment(apply_cutoff=True)
+# Duplicate investigation runs on the raw cleaned data (including HI sites)
+# so any dedup artefacts at research lokaliteter are also visible.
+lice = load_lice(apply_cutoff=True, commercial_only=False)
+treat = load_treatment(apply_cutoff=True, commercial_only=False)
 
 print("=== LICE DUPLICATES ===\n")
 

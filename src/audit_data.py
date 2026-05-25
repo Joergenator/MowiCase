@@ -20,9 +20,11 @@ def header(title: str) -> None:
     print(f"\n{'=' * 70}\n{title}\n{'=' * 70}")
 
 
-# Load with cutoff applied (mirrors how every consumer sees the data)
-lice = load_lice(apply_cutoff=True)
-treat = load_treatment(apply_cutoff=True)
+# Load with cutoff applied, including HI research sites — the audit is about
+# the raw data quality, not the operational subset, so anomalies at research
+# sites are still surfaced here.
+lice = load_lice(apply_cutoff=True, commercial_only=False)
+treat = load_treatment(apply_cutoff=True, commercial_only=False)
 
 print(f"lice:      {lice.shape}")
 print(f"treatment: {treat.shape}")

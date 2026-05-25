@@ -37,6 +37,9 @@ env/
 .DS_Store
 Thumbs.db
 
+# Claude Code local settings — per-machine, not team-shared
+.claude/
+
 # Logs / outputs
 *.log
 reports/figures/*.png.tmp

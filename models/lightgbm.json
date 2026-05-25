@@ -8,396 +8,396 @@
     {
       "baseline": "LightGBM v1",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.3825,
-      "P@100": 0.75,
-      "Brier": 0.02694,
-      "count_MAE": 3.78
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.3761,
+      "P@100": 0.73,
+      "Brier": 0.02644,
+      "count_MAE": 3.84
     },
     {
       "baseline": "LightGBM v2",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.3791,
-      "P@100": 0.78,
-      "Brier": 0.02703,
-      "count_MAE": 3.78
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.3724,
+      "P@100": 0.7,
+      "Brier": 0.02647,
+      "count_MAE": 3.62
     },
     {
       "baseline": "LightGBM v1",
       "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.2357,
-      "P@100": 0.66,
-      "Brier": 0.03099,
-      "count_MAE": 4.48
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.2172,
+      "P@100": 0.55,
+      "Brier": 0.03058,
+      "count_MAE": 4.68
     },
     {
       "baseline": "LightGBM v2",
       "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.2324,
-      "P@100": 0.67,
-      "Brier": 0.03111,
-      "count_MAE": 4.48
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.2227,
+      "P@100": 0.63,
+      "Brier": 0.03051,
+      "count_MAE": 4.57
     },
     {
       "baseline": "LightGBM v1",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.1009,
-      "P@100": 0.19,
-      "Brier": 0.03889,
-      "count_MAE": 6.51
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0957,
+      "P@100": 0.17,
+      "Brier": 0.0383,
+      "count_MAE": 5.11
     },
     {
       "baseline": "LightGBM v2",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0962,
-      "P@100": 0.09,
-      "Brier": 0.03928,
-      "count_MAE": 5.37
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0946,
+      "P@100": 0.16,
+      "Brier": 0.03824,
+      "count_MAE": 4.99
     }
   ],
   "all_rows": [
     {
       "baseline": "B0 GlobalRate",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.0359,
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.035,
       "P@100": 0.03,
-      "Brier": 0.03469,
-      "count_MAE": 13.61
+      "Brier": 0.03387,
+      "count_MAE": 13.48
     },
     {
       "baseline": "B1 Persistence",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.1943,
-      "P@100": 0.34,
-      "Brier": 0.04096,
-      "count_MAE": 5.54
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.1897,
+      "P@100": 0.38,
+      "Brier": 0.04034,
+      "count_MAE": 5.52
     },
     {
       "baseline": "B2 SeasonalNaive",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.0392,
-      "P@100": 0.01,
-      "Brier": 0.05466,
-      "count_MAE": 7.75
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.0383,
+      "P@100": 0.04,
+      "Brier": 0.05392,
+      "count_MAE": 7.81
     },
     {
       "baseline": "B3 POWeekRate",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.0712,
-      "P@100": 0.12,
-      "Brier": 0.03408,
-      "count_MAE": 8.02
-    },
-    {
-      "baseline": "B0 GlobalRate",
-      "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.0363,
-      "P@100": 0.03,
-      "Brier": 0.03507,
-      "count_MAE": 13.46
-    },
-    {
-      "baseline": "B1 Persistence",
-      "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.085,
-      "P@100": 0.21,
-      "Brier": 0.05311,
-      "count_MAE": 8.59
-    },
-    {
-      "baseline": "B2 SeasonalNaive",
-      "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.0396,
-      "P@100": 0.03,
-      "Brier": 0.05537,
-      "count_MAE": 7.73
-    },
-    {
-      "baseline": "B3 POWeekRate",
-      "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.0721,
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.0701,
       "P@100": 0.13,
-      "Brier": 0.03445,
-      "count_MAE": 7.85
+      "Brier": 0.0333,
+      "count_MAE": 8.04
+    },
+    {
+      "baseline": "B0 GlobalRate",
+      "horizon": 2,
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.0354,
+      "P@100": 0.03,
+      "Brier": 0.03427,
+      "count_MAE": 13.32
+    },
+    {
+      "baseline": "B1 Persistence",
+      "horizon": 2,
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.0796,
+      "P@100": 0.14,
+      "Brier": 0.05263,
+      "count_MAE": 8.47
+    },
+    {
+      "baseline": "B2 SeasonalNaive",
+      "horizon": 2,
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.0387,
+      "P@100": 0.07,
+      "Brier": 0.05465,
+      "count_MAE": 7.76
+    },
+    {
+      "baseline": "B3 POWeekRate",
+      "horizon": 2,
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.071,
+      "P@100": 0.14,
+      "Brier": 0.03368,
+      "count_MAE": 7.87
     },
     {
       "baseline": "B0 GlobalRate",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0413,
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0403,
       "P@100": 0.03,
-      "Brier": 0.03959,
-      "count_MAE": 12.43
+      "Brier": 0.03866,
+      "count_MAE": 12.28
     },
     {
       "baseline": "B1 Persistence",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0478,
-      "P@100": 0.16,
-      "Brier": 0.05621,
-      "count_MAE": 17.0
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0466,
+      "P@100": 0.12,
+      "Brier": 0.0549,
+      "count_MAE": 16.72
     },
     {
       "baseline": "B2 SeasonalNaive",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0454,
-      "P@100": 0.11,
-      "Brier": 0.06369,
-      "count_MAE": 7.31
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0445,
+      "P@100": 0.05,
+      "Brier": 0.06281,
+      "count_MAE": 7.37
     },
     {
       "baseline": "B3 POWeekRate",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0772,
-      "P@100": 0.12,
-      "Brier": 0.03887,
-      "count_MAE": 7.42
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0757,
+      "P@100": 0.13,
+      "Brier": 0.038,
+      "count_MAE": 7.55
     },
     {
       "baseline": "LightGBM v1",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.3825,
-      "P@100": 0.75,
-      "Brier": 0.02694,
-      "count_MAE": 3.78
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.3761,
+      "P@100": 0.73,
+      "Brier": 0.02644,
+      "count_MAE": 3.84
     },
     {
       "baseline": "LightGBM v2",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.3791,
-      "P@100": 0.78,
-      "Brier": 0.02703,
-      "count_MAE": 3.78
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.3724,
+      "P@100": 0.7,
+      "Brier": 0.02647,
+      "count_MAE": 3.62
     },
     {
       "baseline": "LightGBM v1",
       "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.2357,
-      "P@100": 0.66,
-      "Brier": 0.03099,
-      "count_MAE": 4.48
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.2172,
+      "P@100": 0.55,
+      "Brier": 0.03058,
+      "count_MAE": 4.68
     },
     {
       "baseline": "LightGBM v2",
       "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.2324,
-      "P@100": 0.67,
-      "Brier": 0.03111,
-      "count_MAE": 4.48
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.2227,
+      "P@100": 0.63,
+      "Brier": 0.03051,
+      "count_MAE": 4.57
     },
     {
       "baseline": "LightGBM v1",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.1009,
-      "P@100": 0.19,
-      "Brier": 0.03889,
-      "count_MAE": 6.51
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0957,
+      "P@100": 0.17,
+      "Brier": 0.0383,
+      "count_MAE": 5.11
     },
     {
       "baseline": "LightGBM v2",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0962,
-      "P@100": 0.09,
-      "Brier": 0.03928,
-      "count_MAE": 5.37
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0946,
+      "P@100": 0.16,
+      "Brier": 0.03824,
+      "count_MAE": 4.99
     }
   ],
   "metric_tables": {
     "PR-AUC": {
       "1": {
-        "B0 GlobalRate": 0.0359,
-        "B1 Persistence": 0.1943,
-        "B2 SeasonalNaive": 0.0392,
-        "B3 POWeekRate": 0.0712,
-        "LightGBM v1": 0.3825,
-        "LightGBM v2": 0.3791
+        "B0 GlobalRate": 0.035,
+        "B1 Persistence": 0.1897,
+        "B2 SeasonalNaive": 0.0383,
+        "B3 POWeekRate": 0.0701,
+        "LightGBM v1": 0.3761,
+        "LightGBM v2": 0.3724
       },
       "2": {
-        "B0 GlobalRate": 0.0363,
-        "B1 Persistence": 0.085,
-        "B2 SeasonalNaive": 0.0396,
-        "B3 POWeekRate": 0.0721,
-        "LightGBM v1": 0.2357,
-        "LightGBM v2": 0.2324
+        "B0 GlobalRate": 0.0354,
+        "B1 Persistence": 0.0796,
+        "B2 SeasonalNaive": 0.0387,
+        "B3 POWeekRate": 0.071,
+        "LightGBM v1": 0.2172,
+        "LightGBM v2": 0.2227
       },
       "12": {
-        "B0 GlobalRate": 0.0413,
-        "B1 Persistence": 0.0478,
-        "B2 SeasonalNaive": 0.0454,
-        "B3 POWeekRate": 0.0772,
-        "LightGBM v1": 0.1009,
-        "LightGBM v2": 0.0962
+        "B0 GlobalRate": 0.0403,
+        "B1 Persistence": 0.0466,
+        "B2 SeasonalNaive": 0.0445,
+        "B3 POWeekRate": 0.0757,
+        "LightGBM v1": 0.0957,
+        "LightGBM v2": 0.0946
       }
     },
     "P@100": {
       "1": {
         "B0 GlobalRate": 0.03,
-        "B1 Persistence": 0.34,
-        "B2 SeasonalNaive": 0.01,
-        "B3 POWeekRate": 0.12,
-        "LightGBM v1": 0.75,
-        "LightGBM v2": 0.78
+        "B1 Persistence": 0.38,
+        "B2 SeasonalNaive": 0.04,
+        "B3 POWeekRate": 0.13,
+        "LightGBM v1": 0.73,
+        "LightGBM v2": 0.7
       },
       "2": {
         "B0 GlobalRate": 0.03,
-        "B1 Persistence": 0.21,
-        "B2 SeasonalNaive": 0.03,
-        "B3 POWeekRate": 0.13,
-        "LightGBM v1": 0.66,
-        "LightGBM v2": 0.67
+        "B1 Persistence": 0.14,
+        "B2 SeasonalNaive": 0.07,
+        "B3 POWeekRate": 0.14,
+        "LightGBM v1": 0.55,
+        "LightGBM v2": 0.63
       },
       "12": {
         "B0 GlobalRate": 0.03,
-        "B1 Persistence": 0.16,
-        "B2 SeasonalNaive": 0.11,
-        "B3 POWeekRate": 0.12,
-        "LightGBM v1": 0.19,
-        "LightGBM v2": 0.09
+        "B1 Persistence": 0.12,
+        "B2 SeasonalNaive": 0.05,
+        "B3 POWeekRate": 0.13,
+        "LightGBM v1": 0.17,
+        "LightGBM v2": 0.16
       }
     },
     "Brier": {
       "1": {
-        "B0 GlobalRate": 0.03469,
-        "B1 Persistence": 0.04096,
-        "B2 SeasonalNaive": 0.05466,
-        "B3 POWeekRate": 0.03408,
-        "LightGBM v1": 0.02694,
-        "LightGBM v2": 0.02703
+        "B0 GlobalRate": 0.03387,
+        "B1 Persistence": 0.04034,
+        "B2 SeasonalNaive": 0.05392,
+        "B3 POWeekRate": 0.0333,
+        "LightGBM v1": 0.02644,
+        "LightGBM v2": 0.02647
       },
       "2": {
-        "B0 GlobalRate": 0.03507,
-        "B1 Persistence": 0.05311,
-        "B2 SeasonalNaive": 0.05537,
-        "B3 POWeekRate": 0.03445,
-        "LightGBM v1": 0.03099,
-        "LightGBM v2": 0.03111
+        "B0 GlobalRate": 0.03427,
+        "B1 Persistence": 0.05263,
+        "B2 SeasonalNaive": 0.05465,
+        "B3 POWeekRate": 0.03368,
+        "LightGBM v1": 0.03058,
+        "LightGBM v2": 0.03051
       },
       "12": {
-        "B0 GlobalRate": 0.03959,
-        "B1 Persistence": 0.05621,
-        "B2 SeasonalNaive": 0.06369,
-        "B3 POWeekRate": 0.03887,
-        "LightGBM v1": 0.03889,
-        "LightGBM v2": 0.03928
+        "B0 GlobalRate": 0.03866,
+        "B1 Persistence": 0.0549,
+        "B2 SeasonalNaive": 0.06281,
+        "B3 POWeekRate": 0.038,
+        "LightGBM v1": 0.0383,
+        "LightGBM v2": 0.03824
       }
     },
     "count_MAE": {
       "1": {
-        "B0 GlobalRate": 13.61,
-        "B1 Persistence": 5.54,
-        "B2 SeasonalNaive": 7.75,
-        "B3 POWeekRate": 8.02,
-        "LightGBM v1": 3.78,
-        "LightGBM v2": 3.78
+        "B0 GlobalRate": 13.48,
+        "B1 Persistence": 5.52,
+        "B2 SeasonalNaive": 7.81,
+        "B3 POWeekRate": 8.04,
+        "LightGBM v1": 3.84,
+        "LightGBM v2": 3.62
       },
       "2": {
-        "B0 GlobalRate": 13.46,
-        "B1 Persistence": 8.59,
-        "B2 SeasonalNaive": 7.73,
-        "B3 POWeekRate": 7.85,
-        "LightGBM v1": 4.48,
-        "LightGBM v2": 4.48
+        "B0 GlobalRate": 13.32,
+        "B1 Persistence": 8.47,
+        "B2 SeasonalNaive": 7.76,
+        "B3 POWeekRate": 7.87,
+        "LightGBM v1": 4.68,
+        "LightGBM v2": 4.57
       },
       "12": {
-        "B0 GlobalRate": 12.43,
-        "B1 Persistence": 17.0,
-        "B2 SeasonalNaive": 7.31,
-        "B3 POWeekRate": 7.42,
-        "LightGBM v1": 6.51,
-        "LightGBM v2": 5.37
+        "B0 GlobalRate": 12.28,
+        "B1 Persistence": 16.72,
+        "B2 SeasonalNaive": 7.37,
+        "B3 POWeekRate": 7.55,
+        "LightGBM v1": 5.11,
+        "LightGBM v2": 4.99
       }
     }
   },
   "po_breakdown_v2": {
     "h=1": {
-      "PO1: Svenskegrensen til J\u00e6ren": 0.16307,
-      "PO2: Ryfylket": 0.23902,
-      "PO3: Karm\u00f8y til Sotra": 0.44649,
-      "PO4: Nordhord. til Stadt": 0.48381,
-      "PO5: Stadt til Hustadvika": 0.23858,
-      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.4525,
-      "PO7: N-Tr\u00f8nd. med Bindal": 0.27653,
-      "PO8: Helgeland til Bod\u00f8": 0.215,
-      "PO9: Vestfjorden og Vester\u00e5len": 0.27936,
-      "PO10: And\u00f8ya til Senja": 0.24487,
-      "PO11: Kval\u00f8ya til Loppa": 0.62348,
-      "PO12: Vest-Finnmark": 0.27902,
+      "PO1: Svenskegrensen til J\u00e6ren": 0.17227,
+      "PO2: Ryfylket": 0.23816,
+      "PO3: Karm\u00f8y til Sotra": 0.44793,
+      "PO4: Nordhord. til Stadt": 0.42794,
+      "PO5: Stadt til Hustadvika": 0.23506,
+      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.46872,
+      "PO7: N-Tr\u00f8nd. med Bindal": 0.25513,
+      "PO8: Helgeland til Bod\u00f8": 0.21688,
+      "PO9: Vestfjorden og Vester\u00e5len": 0.29952,
+      "PO10: And\u00f8ya til Senja": 0.23205,
+      "PO11: Kval\u00f8ya til Loppa": 0.64567,
+      "PO12: Vest-Finnmark": 0.26439,
       "PO13: \u00d8st-Finnmark": NaN
     },
     "h=2": {
-      "PO1: Svenskegrensen til J\u00e6ren": 0.04236,
-      "PO2: Ryfylket": 0.14184,
-      "PO3: Karm\u00f8y til Sotra": 0.31617,
-      "PO4: Nordhord. til Stadt": 0.31206,
-      "PO5: Stadt til Hustadvika": 0.11449,
-      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.29201,
-      "PO7: N-Tr\u00f8nd. med Bindal": 0.10146,
-      "PO8: Helgeland til Bod\u00f8": 0.12271,
-      "PO9: Vestfjorden og Vester\u00e5len": 0.12044,
-      "PO10: And\u00f8ya til Senja": 0.1943,
-      "PO11: Kval\u00f8ya til Loppa": 0.5082,
-      "PO12: Vest-Finnmark": 0.10711,
+      "PO1: Svenskegrensen til J\u00e6ren": 0.03775,
+      "PO2: Ryfylket": 0.12866,
+      "PO3: Karm\u00f8y til Sotra": 0.28986,
+      "PO4: Nordhord. til Stadt": 0.25122,
+      "PO5: Stadt til Hustadvika": 0.08771,
+      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.29472,
+      "PO7: N-Tr\u00f8nd. med Bindal": 0.10199,
+      "PO8: Helgeland til Bod\u00f8": 0.12012,
+      "PO9: Vestfjorden og Vester\u00e5len": 0.15073,
+      "PO10: And\u00f8ya til Senja": 0.2103,
+      "PO11: Kval\u00f8ya til Loppa": 0.54242,
+      "PO12: Vest-Finnmark": 0.11255,
       "PO13: \u00d8st-Finnmark": NaN
     },
     "h=12": {
-      "PO1: Svenskegrensen til J\u00e6ren": 0.00855,
-      "PO2: Ryfylket": 0.10003,
-      "PO3: Karm\u00f8y til Sotra": 0.19683,
-      "PO4: Nordhord. til Stadt": 0.11063,
-      "PO5: Stadt til Hustadvika": 0.08268,
-      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.17408,
-      "PO7: N-Tr\u00f8nd. med Bindal": 0.05479,
-      "PO8: Helgeland til Bod\u00f8": 0.11387,
-      "PO9: Vestfjorden og Vester\u00e5len": 0.08451,
-      "PO10: And\u00f8ya til Senja": 0.09341,
-      "PO11: Kval\u00f8ya til Loppa": 0.07849,
-      "PO12: Vest-Finnmark": 0.04889,
+      "PO1: Svenskegrensen til J\u00e6ren": 0.00813,
+      "PO2: Ryfylket": 0.09191,
+      "PO3: Karm\u00f8y til Sotra": 0.18914,
+      "PO4: Nordhord. til Stadt": 0.09353,
+      "PO5: Stadt til Hustadvika": 0.07738,
+      "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.18352,
+      "PO7: N-Tr\u00f8nd. med Bindal": 0.05195,
+      "PO8: Helgeland til Bod\u00f8": 0.10284,
+      "PO9: Vestfjorden og Vester\u00e5len": 0.10504,
+      "PO10: And\u00f8ya til Senja": 0.08375,
+      "PO11: Kval\u00f8ya til Loppa": 0.06653,
+      "PO12: Vest-Finnmark": 0.14854,
       "PO13: \u00d8st-Finnmark": NaN
     }
   },
@@ -413,8 +413,8 @@
           "bagging_freq": 5,
           "seed": 42
         },
-        "best_iter": 209,
-        "inner_val_pr_auc": 0.44397908261514674
+        "best_iter": 212,
+        "inner_val_pr_auc": 0.44929770681895387
       },
       "h=2": {
         "best_params": {
@@ -426,38 +426,10 @@
           "bagging_freq": 5,
           "seed": 42
         },
-        "best_iter": 240,
-        "inner_val_pr_auc": 0.28306731239568905
+        "best_iter": 160,
+        "inner_val_pr_auc": 0.27963547812597844
       },
       "h=12": {
-        "best_params": {
-          "learning_rate": 0.05,
-          "num_leaves": 127,
-          "min_data_in_leaf": 500,
-          "feature_fraction": 0.9,
-          "bagging_fraction": 0.9,
-          "bagging_freq": 5,
-          "seed": 42
-        },
-        "best_iter": 128,
-        "inner_val_pr_auc": 0.11517812787075028
-      }
-    },
-    "LightGBM v2": {
-      "h=1": {
-        "best_params": {
-          "learning_rate": 0.05,
-          "num_leaves": 31,
-          "min_data_in_leaf": 100,
-          "feature_fraction": 0.9,
-          "bagging_fraction": 0.9,
-          "bagging_freq": 5,
-          "seed": 42
-        },
-        "best_iter": 196,
-        "inner_val_pr_auc": 0.4422904287552624
-      },
-      "h=2": {
         "best_params": {
           "learning_rate": 0.05,
           "num_leaves": 63,
@@ -467,10 +439,12 @@
           "bagging_freq": 5,
           "seed": 42
         },
-        "best_iter": 170,
-        "inner_val_pr_auc": 0.2818716942199108
-      },
-      "h=12": {
+        "best_iter": 128,
+        "inner_val_pr_auc": 0.11314928518446313
+      }
+    },
+    "LightGBM v2": {
+      "h=1": {
         "best_params": {
           "learning_rate": 0.03,
           "num_leaves": 63,
@@ -480,8 +454,34 @@
           "bagging_freq": 5,
           "seed": 42
         },
-        "best_iter": 143,
-        "inner_val_pr_auc": 0.11658743217422493
+        "best_iter": 200,
+        "inner_val_pr_auc": 0.443432768711552
+      },
+      "h=2": {
+        "best_params": {
+          "learning_rate": 0.05,
+          "num_leaves": 127,
+          "min_data_in_leaf": 500,
+          "feature_fraction": 0.9,
+          "bagging_fraction": 0.9,
+          "bagging_freq": 5,
+          "seed": 42
+        },
+        "best_iter": 105,
+        "inner_val_pr_auc": 0.28361431968597045
+      },
+      "h=12": {
+        "best_params": {
+          "learning_rate": 0.05,
+          "num_leaves": 63,
+          "min_data_in_leaf": 200,
+          "feature_fraction": 0.9,
+          "bagging_fraction": 0.9,
+          "bagging_freq": 5,
+          "seed": 42
+        },
+        "best_iter": 87,
+        "inner_val_pr_auc": 0.11621301035174489
       }
     }
   },
@@ -600,102 +600,102 @@
   "top_features": {
     "LightGBM v1": {
       "h=1": {
-        "FEMALEADULT": 285573.0,
-        "FEMALEADULT_roll4_max": 56234.0,
-        "MOBILELICE": 52204.0,
-        "target_iso_week": 39755.0,
-        "FEMALEADULT_roll8_max": 28908.0,
-        "site_age_weeks": 18514.0,
-        "FEMALEADULT_roll12_max": 16864.0,
-        "MOBILELICE_roll4_mean": 16171.0,
-        "MOBILELICE_roll4_max": 14663.0,
-        "LICELIMITWEEK": 7890.0
+        "FEMALEADULT": 279975.0,
+        "FEMALEADULT_roll4_max": 53541.0,
+        "MOBILELICE": 50943.0,
+        "target_iso_week": 38261.0,
+        "FEMALEADULT_roll8_max": 28558.0,
+        "site_age_weeks": 19764.0,
+        "MOBILELICE_roll4_mean": 18776.0,
+        "MOBILELICE_roll4_max": 14710.0,
+        "FEMALEADULT_roll12_max": 14546.0,
+        "LICELIMITWEEK": 7844.0
       },
       "h=2": {
-        "FEMALEADULT": 190435.0,
-        "MOBILELICE": 96956.0,
-        "FEMALEADULT_roll4_max": 89173.0,
-        "MOBILELICE_roll4_max": 80761.0,
-        "target_iso_week": 74354.0,
-        "FEMALEADULT_roll8_max": 62797.0,
-        "site_age_weeks": 39520.0,
-        "FEMALEADULT_roll12_max": 35480.0,
-        "PRODUCTIONAREAID": 18137.0,
-        "FEMALEADULT_roll8_mean": 17925.0
+        "FEMALEADULT": 171631.0,
+        "MOBILELICE_roll4_max": 111721.0,
+        "MOBILELICE": 79945.0,
+        "FEMALEADULT_roll4_max": 76649.0,
+        "target_iso_week": 66226.0,
+        "FEMALEADULT_roll8_max": 57522.0,
+        "site_age_weeks": 37987.0,
+        "FEMALEADULT_roll12_max": 32555.0,
+        "FEMALEADULT_roll4_mean": 19935.0,
+        "PRODUCTIONAREAID": 16063.0
       },
       "h=12": {
-        "target_iso_week": 64471.0,
-        "site_age_weeks": 47080.0,
-        "PRODUCTIONAREAID": 30230.0,
-        "MOBILELICE_roll4_max": 21173.0,
-        "FEMALEADULT_roll8_max": 20060.0,
-        "FEMALEADULT_roll12_max": 19407.0,
-        "days_since_chem": 16734.0,
-        "MOBILELICE_roll8_max": 16702.0,
-        "days_since_bio": 16622.0,
-        "MOBILELICE_roll8_mean": 14714.0
+        "target_iso_week": 57119.0,
+        "site_age_weeks": 45849.0,
+        "PRODUCTIONAREAID": 25433.0,
+        "MOBILELICE_roll4_max": 23171.0,
+        "FEMALEADULT_roll8_max": 19413.0,
+        "FEMALEADULT_roll12_max": 17399.0,
+        "MOBILELICE_roll8_mean": 17052.0,
+        "days_since_bio": 13412.0,
+        "days_since_chem": 13288.0,
+        "FEMALEADULT_roll12_mean": 13042.0
       }
     },
     "LightGBM v2": {
       "h=1": {
-        "FEMALEADULT": 311108.0,
-        "MOBILELICE": 43295.0,
-        "target_iso_week": 39818.0,
-        "FEMALEADULT_roll4_max": 31516.0,
-        "FEMALEADULT_roll8_max": 31480.0,
-        "MOBILELICE_roll4_mean": 24150.0,
-        "site_age_weeks": 18969.0,
-        "FEMALEADULT_roll12_max": 13895.0,
-        "MOBILELICE_roll4_max": 13666.0,
-        "LICELIMITWEEK": 8101.0
+        "FEMALEADULT": 530130.0,
+        "MOBILELICE": 66271.0,
+        "target_iso_week": 62779.0,
+        "FEMALEADULT_roll8_max": 45862.0,
+        "MOBILELICE_roll4_mean": 40320.0,
+        "FEMALEADULT_roll4_max": 37870.0,
+        "site_age_weeks": 32807.0,
+        "MOBILELICE_roll4_max": 26509.0,
+        "FEMALEADULT_roll12_max": 21358.0,
+        "MOBILELICE_lag1": 13242.0
       },
       "h=2": {
-        "FEMALEADULT": 117184.0,
-        "FEMALEADULT_roll4_max": 63175.0,
-        "MOBILELICE": 53954.0,
-        "target_iso_week": 51116.0,
-        "MOBILELICE_roll4_max": 49589.0,
-        "FEMALEADULT_roll8_max": 28810.0,
-        "FEMALEADULT_roll12_max": 27291.0,
-        "site_age_weeks": 22833.0,
-        "FEMALEADULT_roll8_mean": 11940.0,
-        "PRODUCTIONAREAID": 11828.0
+        "FEMALEADULT": 116198.0,
+        "MOBILELICE_roll4_max": 71648.0,
+        "FEMALEADULT_roll4_max": 63636.0,
+        "target_iso_week": 52172.0,
+        "MOBILELICE": 45859.0,
+        "site_age_weeks": 22673.0,
+        "FEMALEADULT_roll12_max": 20195.0,
+        "FEMALEADULT_roll8_max": 19018.0,
+        "PRODUCTIONAREAID": 12837.0,
+        "FEMALEADULT_roll8_mean": 9969.0
       },
       "h=12": {
-        "target_iso_week": 81588.0,
-        "site_age_weeks": 67428.0,
-        "PRODUCTIONAREAID": 38575.0,
-        "FEMALEADULT_roll8_max": 36987.0,
-        "FEMALEADULT_roll12_max": 35418.0,
-        "MOBILELICE_roll4_max": 28828.0,
-        "FEMALEADULT_roll12_mean": 23217.0,
-        "days_since_bio": 21997.0,
-        "MOBILELICE_roll8_max": 20678.0,
-        "MOBILELICE_roll8_mean": 19782.0
+        "target_iso_week": 48667.0,
+        "site_age_weeks": 40269.0,
+        "PRODUCTIONAREAID": 23994.0,
+        "MOBILELICE_roll8_mean": 19773.0,
+        "MOBILELICE_roll4_max": 19538.0,
+        "FEMALEADULT_roll8_max": 18807.0,
+        "FEMALEADULT_roll12_max": 16581.0,
+        "FEMALEADULT_roll12_mean": 12540.0,
+        "SEATEMPERATURE": 12289.0,
+        "days_since_mech": 11203.0
       }
     }
   },
   "bio_feature_ranks_v2": [
     {
       "horizon": 1,
-      "bio_active_rank": 46,
-      "weeks_since_last_cold_rank": 42,
-      "bio_active_gain": 406.53740215301514,
-      "weeks_since_last_cold_gain": 858.6413159370422
+      "bio_active_rank": 48,
+      "weeks_since_last_cold_rank": 33,
+      "bio_active_gain": 640.1271562576294,
+      "weeks_since_last_cold_gain": 3614.5783281326294
     },
     {
       "horizon": 2,
-      "bio_active_rank": 47,
-      "weeks_since_last_cold_rank": 30,
-      "bio_active_gain": 649.0538759231567,
-      "weeks_since_last_cold_gain": 3065.1662125587463
+      "bio_active_rank": 48,
+      "weeks_since_last_cold_rank": 26,
+      "bio_active_gain": 460.3074975013733,
+      "weeks_since_last_cold_gain": 3733.6610679626465
     },
     {
       "horizon": 12,
-      "bio_active_rank": 42,
-      "weeks_since_last_cold_rank": 19,
-      "bio_active_gain": 1318.632695198059,
-      "weeks_since_last_cold_gain": 6313.853899002075
+      "bio_active_rank": 41,
+      "weeks_since_last_cold_rank": 20,
+      "bio_active_gain": 759.4526796340942,
+      "weeks_since_last_cold_gain": 3925.3370094299316
     }
   ]
 }

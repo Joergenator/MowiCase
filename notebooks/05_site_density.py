@@ -93,110 +93,135 @@ print(active_per_po.sort_values("n_active_sites", ascending=False)
 
 
 # %% [markdown]
-# ## Chart 2 — Lokalitetstetthet: PO1-2 vs PO3-4 (2024)
+# ## Chart 2 — Klyngedannelse: hvilke PO har lokalitetene tettest samlet?
 #
-# **Spørsmål:** Hvor tett ligger lokalitetene i PO3-4 sammenliknet med PO1-2?
+# **Spørsmål:** Hvor i Norge ligger oppdrettsanlegg tettest sammen?
+# Klynger betyr potensielt høyere smittepress mellom anlegg via vannmasser.
 #
-# **Mål:** *Nearest-neighbour distance* per lokalitet (km), beregnet med
-# haversine på lat/lon. For hver lokalitet finner vi nærmeste annen lokalitet
-# **innenfor samme PO-gruppe** (slik at vi måler tetthet i regionen, ikke
-# avstand til en lokalitet i en helt annen PO). Dette er det biologisk
-# relevante målet: lus sprer seg mellom anlegg via vannmasser, så jo nærmere
-# nabo, jo større smittepress.
+# **Mål:** For hver lokalitet teller vi antall **andre** lokaliteter innenfor
+# 5 km radius (haversine på lat/lon). PO-grensene ignoreres — naboer på tvers
+# av PO-grenser teller med (lus bryr seg ikke om administrative grenser).
+# Snittet beregnes på (år, lokalitet)-nivå over 2020-2025 og aggregeres per PO.
 #
-# To visninger:
-# 1. **Kart** med lokalitetene per gruppe (sanity check).
-# 2. **Box+strip plot** av NN-avstander for hver gruppe.
+# To paneler:
+#   1. Stolpediagram: snitt naboer-innen-5km per PO (sortert, mest tett øverst).
+#   2. Kart av Norge: hver lokalitet farget etter sin egen naboscore.
 
 # %%
-GROUPS = {
-    "PO1-2 (Svenskegrensen, Ryfylket)": [1, 2],
-    "PO3-4 (Karmøy, Nordhordaland til Stadt)": [3, 4],
-}
+from src.map_utils import add_basemap, get_crs
+
+RADIUS_KM = 5.0
 
 
-def nn_distances_km(lat: np.ndarray, lon: np.ndarray) -> np.ndarray:
-    """Nearest-neighbour distance in km for each point, using haversine."""
+def neighbors_within(lat: np.ndarray, lon: np.ndarray, radius_km: float) -> np.ndarray:
+    """Per point, count *other* points within radius_km using haversine."""
     if len(lat) < 2:
-        return np.array([])
+        return np.zeros(len(lat), dtype=int)
     coords_rad = np.radians(np.column_stack([lat, lon]))
     tree = BallTree(coords_rad, metric="haversine")
-    # k=2 because the first neighbour is the point itself
-    dist_rad, _ = tree.query(coords_rad, k=2)
-    return dist_rad[:, 1] * EARTH_R_KM
+    radius_rad = radius_km / EARTH_R_KM
+    counts = tree.query_radius(coords_rad, r=radius_rad, count_only=True)
+    # Subtract 1 because each point is its own nearest "neighbor"
+    return counts - 1
 
 
-# Take a single representative lat/lon per active 2024 site (mean across the
-# year; lat/lon drift across weeks is <0.01° for ~99.7% of sites per the audit).
-sites_2024 = (
-    lice_2024.dropna(subset=["LATITUDE", "LONGITUDE", "PRODUCTIONAREAID"])
-    .groupby(["SITENUMBER", "PRODUCTIONAREAID"])
-    .agg(lat=("LATITUDE", "mean"), lon=("LONGITUDE", "mean"))
-    .reset_index()
-)
+def build_clustering_chart(years: range, lice_df: pd.DataFrame) -> None:
+    """Compute per-PO clustering metric and render the two-panel chart.
 
-records = []
-group_stats = {}
-for label, po_ids in GROUPS.items():
-    sub = sites_2024[sites_2024["PRODUCTIONAREAID"].isin(po_ids)]
-    nn_km = nn_distances_km(sub["lat"].values, sub["lon"].values)
-    for d in nn_km:
-        records.append({"group": label, "nn_km": d})
-    group_stats[label] = {
-        "n_sites": len(sub),
-        "mean_nn_km": float(np.mean(nn_km)) if len(nn_km) else np.nan,
-        "median_nn_km": float(np.median(nn_km)) if len(nn_km) else np.nan,
-        "p25_km": float(np.percentile(nn_km, 25)) if len(nn_km) else np.nan,
-        "p75_km": float(np.percentile(nn_km, 75)) if len(nn_km) else np.nan,
-    }
+    For every year in `years`, count each site's neighbors within RADIUS_KM,
+    then average across (year, site) within each PO. Renders a bar ranking
+    plus a Norway-coastline map of per-site density, saved as
+    `site_clustering_per_po_{ystart}_{yend}.png` in FIG_DIR.
+    """
+    per_year_records = []
+    for yr in years:
+        lice_y = lice_df[lice_df["WEEK_START"].dt.year == yr]
+        sites_y = (lice_y.dropna(subset=["LATITUDE", "LONGITUDE", "PRODUCTIONAREAID"])
+                         .groupby(["SITENUMBER", "PRODUCTIONAREAID", "PRODUCTIONAREA"])
+                         .agg(lat=("LATITUDE", "mean"), lon=("LONGITUDE", "mean"))
+                         .reset_index())
+        if len(sites_y) == 0:
+            continue
+        sites_y["n_neighbors_5km"] = neighbors_within(
+            sites_y["lat"].values, sites_y["lon"].values, RADIUS_KM,
+        )
+        sites_y["YEAR"] = yr
+        per_year_records.append(sites_y)
 
-nn_df = pd.DataFrame(records)
-stats_df = pd.DataFrame(group_stats).T.round(2)
-print(f"\nNN-avstand mellom 2024-lokaliteter, innenfor PO-gruppe:")
-print(stats_df.to_string())
+    per_year = pd.concat(per_year_records, ignore_index=True)
 
-# --- Plot ---
-fig, (ax_map, ax_box) = plt.subplots(1, 2, figsize=(15, 7),
-                                     gridspec_kw={"width_ratios": [1, 1.2]})
+    po_summary = (
+        per_year.groupby(["PRODUCTIONAREAID", "PRODUCTIONAREA"])
+        .agg(mean_neighbors=("n_neighbors_5km", "mean"),
+             median_neighbors=("n_neighbors_5km", "median"),
+             site_years=("SITENUMBER", "size"),
+             unique_sites=("SITENUMBER", "nunique"))
+        .reset_index()
+        .sort_values("mean_neighbors", ascending=True)
+    )
+    po_summary["label"] = po_summary.apply(
+        lambda r: po_label(r["PRODUCTIONAREAID"], r["PRODUCTIONAREA"]), axis=1)
 
-GROUP_COLORS = {
-    "PO1-2 (Svenskegrensen, Ryfylket)": "#1f77b4",
-    "PO3-4 (Karmøy, Nordhordaland til Stadt)": "#d62728",
-}
+    site_summary = (
+        per_year.groupby(["SITENUMBER", "PRODUCTIONAREAID", "PRODUCTIONAREA"])
+        .agg(mean_neighbors=("n_neighbors_5km", "mean"),
+             lat=("lat", "mean"), lon=("lon", "mean"))
+        .reset_index()
+    )
 
-# Left: simple lat/lon map of the two groups
-for label, po_ids in GROUPS.items():
-    sub = sites_2024[sites_2024["PRODUCTIONAREAID"].isin(po_ids)]
-    ax_map.scatter(sub["lon"], sub["lat"], s=22, alpha=0.7,
-                   color=GROUP_COLORS[label], edgecolors="grey",
-                   linewidths=0.3, label=f"{label}  (n={len(sub)})")
-ax_map.set_xlabel("Longitude (°E)")
-ax_map.set_ylabel("Latitude (°N)")
-ax_map.set_title("Lokaliteter 2024 — PO1-2 og PO3-4")
-ax_map.legend(loc="lower right", fontsize=9, framealpha=0.95)
-ax_map.set_aspect(2.0)
+    ystart, yend = min(years), max(years)
+    print(f"\nKlyngedannelse: snitt naboer innen {RADIUS_KM:.0f} km per PO, "
+          f"snitt over {ystart}-{yend}:")
+    print(po_summary.sort_values("mean_neighbors", ascending=False)
+          [["label", "mean_neighbors", "median_neighbors", "unique_sites"]]
+          .round(2).to_string(index=False))
 
-# Right: NN distance distribution per group
-order = list(GROUPS.keys())
-sns.boxplot(data=nn_df, x="group", y="nn_km", order=order,
-            ax=ax_box, palette=[GROUP_COLORS[g] for g in order],
-            showfliers=False, width=0.5, linewidth=1.2)
-sns.stripplot(data=nn_df, x="group", y="nn_km", order=order,
-              ax=ax_box, color="#222222", alpha=0.4, size=3, jitter=0.18)
-ax_box.set_ylabel("Avstand til nærmeste nabo (km)")
-ax_box.set_xlabel("")
-ax_box.set_title("Lokalitetstetthet (NN-avstand)")
-for i, label in enumerate(order):
-    s = group_stats[label]
-    ax_box.text(i, s["median_nn_km"] + 0.4,
-                f"median {s['median_nn_km']:.1f} km\nsnitt {s['mean_nn_km']:.1f} km",
-                ha="center", va="bottom", fontsize=9,
-                bbox=dict(boxstyle="round,pad=0.2", facecolor="white",
-                          alpha=0.85, edgecolor="none"))
-ax_box.tick_params(axis="x", labelsize=9)
+    DATA_CRS, MAP_CRS = get_crs()
 
-fig.suptitle(f"Lokalitetstetthet PO1-2 vs PO3-4, {YEAR}",
-             fontsize=14, fontweight="bold", y=1.0)
-fig.tight_layout()
-fig.savefig(FIG_DIR / f"site_density_po1_4_{YEAR}.png")
-plt.show()
+    fig = plt.figure(figsize=(16, 10))
+    ax_bar = fig.add_subplot(1, 2, 1)
+    ax_map = fig.add_subplot(1, 2, 2, projection=MAP_CRS)
+
+    bar_colors = ["#d62728" if v >= po_summary["mean_neighbors"].median() else "#1f77b4"
+                  for v in po_summary["mean_neighbors"]]
+    bars = ax_bar.barh(po_summary["label"], po_summary["mean_neighbors"],
+                       color=bar_colors)
+    ax_bar.bar_label(bars, fmt="%.1f", padding=3, fontsize=9)
+    ax_bar.set_xlabel(f"Snitt antall naboer innen {RADIUS_KM:.0f} km per lokalitet")
+    ax_bar.set_title(f"Klyngedannelse per PO  ({ystart}-{yend} snitt)")
+    ax_bar.set_xlim(0, po_summary["mean_neighbors"].max() * 1.15)
+
+    extent = (
+        site_summary["lon"].min() - 1.0, site_summary["lon"].max() + 1.0,
+        site_summary["lat"].min() - 0.5, site_summary["lat"].max() + 0.5,
+    )
+    add_basemap(ax_map, extent)
+
+    vmax = np.percentile(site_summary["mean_neighbors"], 95)
+    sc = ax_map.scatter(
+        site_summary["lon"], site_summary["lat"],
+        c=site_summary["mean_neighbors"], cmap="YlOrRd",
+        s=22, alpha=0.9, edgecolors="grey", linewidths=0.25,
+        vmin=0, vmax=vmax,
+        transform=DATA_CRS, zorder=3,
+    )
+    cb = fig.colorbar(sc, ax=ax_map, shrink=0.6, pad=0.02, extend="max")
+    cb.set_label(f"Naboer innen {RADIUS_KM:.0f} km (snitt {ystart}-{yend}), "
+                 f"fargeskala klippet ved p95={vmax:.0f}")
+    ax_map.set_title(f"Hvor klyngene faktisk ligger  (n={len(site_summary)} lokaliteter)")
+
+    fig.suptitle(
+        f"Hvilke produksjonsområder har tettest klynger av lokaliteter?  "
+        f"({ystart}-{yend})",
+        fontsize=14, fontweight="bold", y=1.0,
+    )
+    fig.tight_layout()
+    fig.savefig(FIG_DIR / f"site_clustering_per_po_{ystart}_{yend}.png")
+    plt.show()
+
+
+# Recent operational snapshot — matches the chart we already had
+build_clustering_chart(range(2020, 2026), lice)
+
+# Full-history view — every year in the cleaned dataset
+build_clustering_chart(range(2012, 2026), lice)

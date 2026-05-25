@@ -8,203 +8,203 @@
     {
       "baseline": "B0 GlobalRate",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.0359,
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.035,
       "P@100": 0.03,
-      "Brier": 0.03469,
-      "count_MAE": 13.61
+      "Brier": 0.03387,
+      "count_MAE": 13.49
     },
     {
       "baseline": "B1 Persistence",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.1943,
-      "P@100": 0.34,
-      "Brier": 0.04096,
-      "count_MAE": 5.54
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.1897,
+      "P@100": 0.38,
+      "Brier": 0.04034,
+      "count_MAE": 5.52
     },
     {
       "baseline": "B2 SeasonalNaive",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.0392,
-      "P@100": 0.01,
-      "Brier": 0.05466,
-      "count_MAE": 7.75
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.0383,
+      "P@100": 0.04,
+      "Brier": 0.05392,
+      "count_MAE": 7.81
     },
     {
       "baseline": "B3 POWeekRate",
       "horizon": 1,
-      "n_test": 29077,
-      "pos_rate": 0.0359,
-      "PR-AUC": 0.0712,
-      "P@100": 0.12,
-      "Brier": 0.03408,
-      "count_MAE": 8.02
-    },
-    {
-      "baseline": "B0 GlobalRate",
-      "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.0363,
-      "P@100": 0.03,
-      "Brier": 0.03507,
-      "count_MAE": 13.46
-    },
-    {
-      "baseline": "B1 Persistence",
-      "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.085,
-      "P@100": 0.21,
-      "Brier": 0.05311,
-      "count_MAE": 8.59
-    },
-    {
-      "baseline": "B2 SeasonalNaive",
-      "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.0396,
-      "P@100": 0.03,
-      "Brier": 0.05537,
-      "count_MAE": 7.73
-    },
-    {
-      "baseline": "B3 POWeekRate",
-      "horizon": 2,
-      "n_test": 28487,
-      "pos_rate": 0.0363,
-      "PR-AUC": 0.0721,
+      "n_test": 28955,
+      "pos_rate": 0.035,
+      "PR-AUC": 0.0701,
       "P@100": 0.13,
-      "Brier": 0.03445,
-      "count_MAE": 7.85
+      "Brier": 0.0333,
+      "count_MAE": 8.04
+    },
+    {
+      "baseline": "B0 GlobalRate",
+      "horizon": 2,
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.0354,
+      "P@100": 0.03,
+      "Brier": 0.03427,
+      "count_MAE": 13.32
+    },
+    {
+      "baseline": "B1 Persistence",
+      "horizon": 2,
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.0796,
+      "P@100": 0.14,
+      "Brier": 0.05263,
+      "count_MAE": 8.47
+    },
+    {
+      "baseline": "B2 SeasonalNaive",
+      "horizon": 2,
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.0387,
+      "P@100": 0.07,
+      "Brier": 0.05465,
+      "count_MAE": 7.76
+    },
+    {
+      "baseline": "B3 POWeekRate",
+      "horizon": 2,
+      "n_test": 28368,
+      "pos_rate": 0.0354,
+      "PR-AUC": 0.071,
+      "P@100": 0.14,
+      "Brier": 0.03368,
+      "count_MAE": 7.87
     },
     {
       "baseline": "B0 GlobalRate",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0413,
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0403,
       "P@100": 0.03,
-      "Brier": 0.03959,
-      "count_MAE": 12.43
+      "Brier": 0.03866,
+      "count_MAE": 12.28
     },
     {
       "baseline": "B1 Persistence",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0478,
-      "P@100": 0.16,
-      "Brier": 0.05621,
-      "count_MAE": 17.0
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0466,
+      "P@100": 0.12,
+      "Brier": 0.0549,
+      "count_MAE": 16.72
     },
     {
       "baseline": "B2 SeasonalNaive",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0454,
-      "P@100": 0.11,
-      "Brier": 0.06369,
-      "count_MAE": 7.31
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0445,
+      "P@100": 0.05,
+      "Brier": 0.06281,
+      "count_MAE": 7.37
     },
     {
       "baseline": "B3 POWeekRate",
       "horizon": 12,
-      "n_test": 23039,
-      "pos_rate": 0.0413,
-      "PR-AUC": 0.0772,
-      "P@100": 0.12,
-      "Brier": 0.03887,
-      "count_MAE": 7.42
+      "n_test": 22949,
+      "pos_rate": 0.0403,
+      "PR-AUC": 0.0757,
+      "P@100": 0.13,
+      "Brier": 0.038,
+      "count_MAE": 7.55
     }
   ],
   "metric_tables": {
     "PR-AUC": {
       "1": {
-        "B0 GlobalRate": 0.0359,
-        "B1 Persistence": 0.1943,
-        "B2 SeasonalNaive": 0.0392,
-        "B3 POWeekRate": 0.0712
+        "B0 GlobalRate": 0.035,
+        "B1 Persistence": 0.1897,
+        "B2 SeasonalNaive": 0.0383,
+        "B3 POWeekRate": 0.0701
       },
       "2": {
-        "B0 GlobalRate": 0.0363,
-        "B1 Persistence": 0.085,
-        "B2 SeasonalNaive": 0.0396,
-        "B3 POWeekRate": 0.0721
+        "B0 GlobalRate": 0.0354,
+        "B1 Persistence": 0.0796,
+        "B2 SeasonalNaive": 0.0387,
+        "B3 POWeekRate": 0.071
       },
       "12": {
-        "B0 GlobalRate": 0.0413,
-        "B1 Persistence": 0.0478,
-        "B2 SeasonalNaive": 0.0454,
-        "B3 POWeekRate": 0.0772
+        "B0 GlobalRate": 0.0403,
+        "B1 Persistence": 0.0466,
+        "B2 SeasonalNaive": 0.0445,
+        "B3 POWeekRate": 0.0757
       }
     },
     "P@100": {
       "1": {
         "B0 GlobalRate": 0.03,
-        "B1 Persistence": 0.34,
-        "B2 SeasonalNaive": 0.01,
-        "B3 POWeekRate": 0.12
+        "B1 Persistence": 0.38,
+        "B2 SeasonalNaive": 0.04,
+        "B3 POWeekRate": 0.13
       },
       "2": {
         "B0 GlobalRate": 0.03,
-        "B1 Persistence": 0.21,
-        "B2 SeasonalNaive": 0.03,
-        "B3 POWeekRate": 0.13
+        "B1 Persistence": 0.14,
+        "B2 SeasonalNaive": 0.07,
+        "B3 POWeekRate": 0.14
       },
       "12": {
         "B0 GlobalRate": 0.03,
-        "B1 Persistence": 0.16,
-        "B2 SeasonalNaive": 0.11,
-        "B3 POWeekRate": 0.12
+        "B1 Persistence": 0.12,
+        "B2 SeasonalNaive": 0.05,
+        "B3 POWeekRate": 0.13
       }
     },
     "Brier": {
       "1": {
-        "B0 GlobalRate": 0.03469,
-        "B1 Persistence": 0.04096,
-        "B2 SeasonalNaive": 0.05466,
-        "B3 POWeekRate": 0.03408
+        "B0 GlobalRate": 0.03387,
+        "B1 Persistence": 0.04034,
+        "B2 SeasonalNaive": 0.05392,
+        "B3 POWeekRate": 0.0333
       },
       "2": {
-        "B0 GlobalRate": 0.03507,
-        "B1 Persistence": 0.05311,
-        "B2 SeasonalNaive": 0.05537,
-        "B3 POWeekRate": 0.03445
+        "B0 GlobalRate": 0.03427,
+        "B1 Persistence": 0.05263,
+        "B2 SeasonalNaive": 0.05465,
+        "B3 POWeekRate": 0.03368
       },
       "12": {
-        "B0 GlobalRate": 0.03959,
-        "B1 Persistence": 0.05621,
-        "B2 SeasonalNaive": 0.06369,
-        "B3 POWeekRate": 0.03887
+        "B0 GlobalRate": 0.03866,
+        "B1 Persistence": 0.0549,
+        "B2 SeasonalNaive": 0.06281,
+        "B3 POWeekRate": 0.038
       }
     },
     "count_MAE": {
       "1": {
-        "B0 GlobalRate": 13.61,
-        "B1 Persistence": 5.54,
-        "B2 SeasonalNaive": 7.75,
-        "B3 POWeekRate": 8.02
+        "B0 GlobalRate": 13.49,
+        "B1 Persistence": 5.52,
+        "B2 SeasonalNaive": 7.81,
+        "B3 POWeekRate": 8.04
       },
       "2": {
-        "B0 GlobalRate": 13.46,
-        "B1 Persistence": 8.59,
-        "B2 SeasonalNaive": 7.73,
-        "B3 POWeekRate": 7.85
+        "B0 GlobalRate": 13.32,
+        "B1 Persistence": 8.47,
+        "B2 SeasonalNaive": 7.76,
+        "B3 POWeekRate": 7.87
       },
       "12": {
-        "B0 GlobalRate": 12.43,
-        "B1 Persistence": 17.0,
-        "B2 SeasonalNaive": 7.31,
-        "B3 POWeekRate": 7.42
+        "B0 GlobalRate": 12.28,
+        "B1 Persistence": 16.72,
+        "B2 SeasonalNaive": 7.37,
+        "B3 POWeekRate": 7.55
       }
     }
   },
@@ -212,8 +212,8 @@
     "h=1w": {
       "PO1: Svenskegrensen til J\u00e6ren": 0.009,
       "PO2: Ryfylket": 0.103,
-      "PO3: Karm\u00f8y til Sotra": 0.062,
-      "PO4: Nordhord. til Stadt": 0.059,
+      "PO3: Karm\u00f8y til Sotra": 0.059,
+      "PO4: Nordhord. til Stadt": 0.053,
       "PO5: Stadt til Hustadvika": 0.055,
       "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.123,
       "PO7: N-Tr\u00f8nd. med Bindal": 0.046,
@@ -227,8 +227,8 @@
     "h=2w": {
       "PO1: Svenskegrensen til J\u00e6ren": 0.009,
       "PO2: Ryfylket": 0.103,
-      "PO3: Karm\u00f8y til Sotra": 0.065,
-      "PO4: Nordhord. til Stadt": 0.062,
+      "PO3: Karm\u00f8y til Sotra": 0.062,
+      "PO4: Nordhord. til Stadt": 0.056,
       "PO5: Stadt til Hustadvika": 0.055,
       "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.124,
       "PO7: N-Tr\u00f8nd. med Bindal": 0.046,
@@ -242,8 +242,8 @@
     "h=12w": {
       "PO1: Svenskegrensen til J\u00e6ren": 0.003,
       "PO2: Ryfylket": 0.108,
-      "PO3: Karm\u00f8y til Sotra": 0.077,
-      "PO4: Nordhord. til Stadt": 0.067,
+      "PO3: Karm\u00f8y til Sotra": 0.072,
+      "PO4: Nordhord. til Stadt": 0.06,
       "PO5: Stadt til Hustadvika": 0.055,
       "PO6: Nordm\u00f8re og S-Tr\u00f8nd.": 0.127,
       "PO7: N-Tr\u00f8nd. med Bindal": 0.049,
