@@ -404,6 +404,65 @@ def build_inference_frame(
     return latest.reset_index(drop=True)
 
 
+def build_cumulative_feature_frame(
+    lice: pd.DataFrame,
+    treatment: pd.DataFrame,
+    weeks: int = 12,
+    counted_only: bool = True,
+) -> pd.DataFrame:
+    """Like `build_feature_frame`, but the target is a CUMULATIVE COUNT:
+
+        target = number of BREACH==True occurrences in the same site's
+                 weeks t+1, t+2, ..., t+weeks.
+
+    Used to train a count-regression model that answers "how many breach
+    weeks should we expect for this site in the next N weeks?" — the
+    natural reading of the case's "Nr of breaches X weeks ahead".
+
+    Leakage-safe: the target is derived from future-week BREACH values,
+    but features remain functions of week <= t. A row is kept only if
+    ALL N future weeks have observed BREACH status (we don't impute).
+
+    Returns a frame with the same feature columns as `build_feature_frame`
+    plus a `target` column (integer count 0..weeks) and
+    `target_week_start` (= week_t + weeks * 7d).
+    """
+    aug = add_lag_features(lice)
+    aug = add_rolling_features(aug)
+    aug = add_degree_weeks(aug)
+    aug = add_treatment_features(aug, treatment)
+    aug = add_cleaner_fish_features(aug)
+    aug = add_neighbor_features(aug)
+    aug = add_site_age(aug)
+
+    df = aug.sort_values(["SITENUMBER", "WEEK_START"]).copy()
+    grouped = df.groupby("SITENUMBER", sort=False)
+
+    # Cumulative breach count across the next `weeks` future weeks.
+    # Require all N future weeks to be observed (non-null BREACH) to keep
+    # the target clean. ~5-10 % of rows are dropped this way; the training
+    # set is still huge.
+    n = len(df)
+    cum = np.zeros(n, dtype=float)
+    fully_observed = np.ones(n, dtype=bool)
+    for k in range(1, weeks + 1):
+        future_breach = grouped["BREACH"].shift(-k)
+        cum += future_breach.fillna(False).astype(float).to_numpy()
+        fully_observed &= future_breach.notna().to_numpy()
+
+    df["target"] = cum
+    df["target_week_start"] = df["WEEK_START"] + pd.to_timedelta(weeks * 7, unit="D")
+    df = df[fully_observed].copy()
+
+    if counted_only:
+        df = df[df["HAVECOUNTEDLICE"].fillna(False)].copy()
+
+    df["target_iso_week"] = df["target_week_start"].dt.isocalendar().week.astype(int)
+    df = df.dropna(subset=["PRODUCTIONAREAID"]).copy()
+    df["PRODUCTIONAREAID"] = df["PRODUCTIONAREAID"].astype(int)
+    return df.reset_index(drop=True)
+
+
 def build_feature_frame(
     lice: pd.DataFrame,
     treatment: pd.DataFrame,

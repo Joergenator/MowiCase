@@ -32,6 +32,9 @@ from pathlib import Path
 ROOT = Path.cwd() if (Path.cwd() / "src").exists() else Path.cwd().parent
 sys.path.insert(0, str(ROOT))
 
+import json
+
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -352,6 +355,72 @@ if v3_available:
 
 
 # %% [markdown]
+# ## Cumulative model — "how many breaches in the next 12 weeks?"
+#
+# v1 and v3 above are BINARY classifiers — they predict the probability of
+# a breach **in the specific target week** (e.g. ISO week 11, 2026-03-16).
+#
+# The case also asks for "Nr of breaches X weeks ahead", which the literal
+# reading is **cumulative** — total breach weeks in the prediction window.
+# We train a LightGBM Poisson regressor (`scripts/train_cumulative.py`)
+# whose target is `sum(BREACH) over t+1..t+12`. Predictions are expected
+# counts (0-12 scale); MAE / RMSE are the natural metrics here.
+
+# %%
+CUM_PATH = MODELS_DIR / f"lgbm_cumulative_w{HORIZON}.txt"
+cum_available = CUM_PATH.exists()
+if cum_available:
+    cum_booster = lgb.Booster(model_file=str(CUM_PATH))
+    cum_meta = json.loads((CUM_PATH.with_suffix(CUM_PATH.suffix + ".meta.json"))
+                          .read_text())
+    cum_features = cum_meta["feature_cols"]
+    inf["predicted_cumulative_count"] = cum_booster.predict(inf[cum_features])
+    print(f"Cumulative model loaded — {len(cum_features)} features, "
+          f"inner-val MAE={cum_meta['inner_val_mae']:.3f}")
+    print(f"\nPredicted cumulative count distribution (expected breach weeks "
+          f"in next {HORIZON} weeks):")
+    print(inf["predicted_cumulative_count"].describe().round(3))
+
+    # Top-20 by cumulative prediction
+    top20_cum = (inf.sort_values("predicted_cumulative_count", ascending=False)
+                     .head(20).copy())
+    top20_cum["label"] = top20_cum.apply(
+        lambda r: f"{r['SITENAME']} (PO{int(r['PRODUCTIONAREAID'])})", axis=1)
+    top20_cum_plot = top20_cum.iloc[::-1]
+    # Color by PO
+    unique_pos_c = sorted(top20_cum["PRODUCTIONAREAID"].unique())
+    palette_c = sns.color_palette("tab10", n_colors=max(len(unique_pos_c), 3))
+    po_colors_c = {po: palette_c[i] for i, po in enumerate(unique_pos_c)}
+    colors_c = [po_colors_c[po] for po in top20_cum_plot["PRODUCTIONAREAID"]]
+
+    fig, ax = plt.subplots(figsize=(11, 8))
+    bars = ax.barh(top20_cum_plot["label"], top20_cum_plot["predicted_cumulative_count"],
+                   color=colors_c, edgecolor="grey", linewidth=0.4)
+    ax.bar_label(bars, fmt="%.2f", padding=3, fontsize=9)
+    ax.set_xlabel(f"Predicted breach count in next {HORIZON} weeks  "
+                  f"(Poisson regression, 0-{HORIZON} scale)")
+    ax.set_title(f"Top-20 commercial sites by predicted CUMULATIVE breach count "
+                 f"over next {HORIZON} weeks\n"
+                 f"(predict from {inf['WEEK_START'].max().date()} -> "
+                 f"covers weeks t+1 ... t+{HORIZON})",
+                 fontsize=11)
+    ax.set_xlim(0, top20_cum["predicted_cumulative_count"].max() * 1.15)
+    handles_c = [plt.Rectangle((0, 0), 1, 1, color=po_colors_c[po])
+                 for po in unique_pos_c]
+    labels_c = [po_label(po, top20_cum[top20_cum["PRODUCTIONAREAID"] == po]
+                                  ["PRODUCTIONAREA"].iloc[0]) for po in unique_pos_c]
+    ax.legend(handles_c, labels_c, title="Produksjonsområde", loc="lower right",
+              fontsize=9, title_fontsize=10, framealpha=0.95)
+    ax.grid(axis="x", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(FIG_FORECAST / "F6_top_sites_cumulative_count_w12.png")
+    plt.show()
+else:
+    print("Cumulative model not trained yet — run "
+          "`python -m scripts.train_cumulative` first.")
+
+
+# %% [markdown]
 # ## Auto-generated forecast summary doc
 
 # %%
@@ -456,6 +525,75 @@ up site-internal noise that the spatial context contradicts.
 else:
     v3_md = "\n\n## v3 (neighbor features)\n\nNot available — run `python -m scripts.train_and_save` to train.\n"
 
+if cum_available:
+    top20_cum_for_md = (inf.sort_values("predicted_cumulative_count", ascending=False)
+                            .head(20))
+    cum_table_lines = [
+        "| SITENUMBER | SITENAME | PO | exp.count (next 12w) | recent FA |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for _, row in top20_cum_for_md.iterrows():
+        cum_table_lines.append(
+            f"| {int(row['SITENUMBER'])} | {row['SITENAME']} | "
+            f"PO{int(row['PRODUCTIONAREAID'])} | "
+            f"{row['predicted_cumulative_count']:.2f} | "
+            f"{('' if pd.isna(row['FEMALEADULT']) else f'{row['FEMALEADULT']:.2f}')} |"
+        )
+    cum_md = f"""
+
+## Cumulative model — "how many breaches in the next {HORIZON} weeks?"
+
+LightGBM **Poisson regression** trained with the v3 feature set (V1 + 8
+neighbor features). Target: `sum(BREACH) over t+1..t+{HORIZON}` —
+integer count, 0..{HORIZON}.
+
+- **Inner-val MAE (2024):** {cum_meta['inner_val_mae']:.3f}
+- **Predicted distribution across {len(inf)} commercial sites:**
+  min {inf['predicted_cumulative_count'].min():.3f} ·
+  median {inf['predicted_cumulative_count'].median():.3f} ·
+  mean {inf['predicted_cumulative_count'].mean():.3f} ·
+  max {inf['predicted_cumulative_count'].max():.3f}
+
+Interpretation: an expected-count of 1.5 means "the model thinks this
+site will have, on average, 1.5 breach weeks across the next {HORIZON}
+weeks." Unlike the binary point-prediction at week t+{HORIZON} only,
+this score integrates risk over the full {HORIZON}-week window.
+
+### Top-20 by cumulative expected count
+
+{chr(10).join(cum_table_lines)}
+
+See `F6_top_sites_cumulative_count_w{HORIZON}.png` for the bar chart.
+
+### Limitation — the treatment-response cycle is implicit, not simulated
+
+This model predicts a **marginal expected count** given current state,
+averaged across historical analogous states. It does NOT simulate the
+breach -> treatment -> lower lice -> regrowth cycle forward in time.
+The training data already includes those dynamics, so the predicted
+count reflects *typical Mowi management* — 2.6 expected breach weeks
+for Ommundsteigen means "on average, historically similar states ended
+with 2.6 breaches across the next {HORIZON} weeks, including the typical
+treatments that followed each breach."
+
+What the model has indirect signal about (via existing features):
+- `days_since_chem`, `days_since_mech`, `days_since_bio` — where the site
+  is in the post-treatment recovery cycle.
+- `treat_*_roll12` — how aggressively the site has been managed recently.
+- `FEMALEADULT_roll8_mean` — whether lice levels are persistently elevated
+  vs an acute spike.
+
+What it CANNOT answer:
+- Counterfactual questions ("what if we treat 2 weeks earlier?").
+- Predictions under a changed management regime (e.g. if Mowi adopts
+  preventive treatment policies that diverge from historical patterns).
+
+A natural next step would be a sequential / hazard model that simulates
+each future week conditionally on a treatment policy. Out of scope here.
+"""
+else:
+    cum_md = ""
+
 forecast_md = f"""# 12-week breach-risk forecast
 
 **Predict from week:** {predict_from}
@@ -484,6 +622,7 @@ the southern coast (see F2).
 
 {top20_md_str}
 {v3_md}
+{cum_md}
 ## Main drivers across the top-20 (v1)
 
 Feature most often ranked as the #1 positive contributor:
