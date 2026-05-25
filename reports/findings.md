@@ -1,7 +1,7 @@
 # EDA Findings — BarentsWatch Lice Data
 
-**Data:** 783,477 weekly site rows · 1,674 sites · 13 POs · 2012-01-02–2025-12-22
-**Overall breach rate (counted weeks):** 4.55%
+**Data:** 781,280 weekly site rows · 1,670 sites · 13 POs · 2012-01-02–2025-12-22
+**Overall breach rate (counted weeks):** 4.48%
 
 ## Key findings
 
@@ -18,9 +18,9 @@
 
 2. **Breach rates concentrate in a few POs.** Top-3 by breach rate:
    - PO5: Stadt til Hustadvika: 6.2%
-   - PO3: Karmøy til Sotra: 5.8%
+   - PO3: Karmøy til Sotra: 5.5%
    - PO4: Nordhord. til Stadt: 5.3%
-   The overall base rate is 4.55%.
+   The overall base rate is 4.48%.
 
 3. **Lice pressure rises sharply above ~10 °C** in every PO; almost all POs see
    their highest mean adult-female counts in the 12–16 °C band, peaking at
@@ -39,10 +39,10 @@
 
 4b. **The high-lice years are the warm years.** Comparing 2020–2025 in the peak
    window (weeks 25–40), the cross-year correlation between mean sea
-   temperature and mean adult-female lice is **r = 0.84** — exactly the
+   temperature and mean adult-female lice is **r = 0.85** — exactly the
    mechanism chart 3 implies, playing out at the annual scale. 2024 was the
    warmest year (mean 14.1 °C
-   in W25-40) and had the highest peak lice (0.31).
+   in W25-40) and had the highest peak lice (0.32).
 
 5. **Mobile and adult-female lice are tightly co-measured** (mean per-site
    contemporaneous correlation 0.55-0.70 across POs). The 2-week-lagged correlation

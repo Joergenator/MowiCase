@@ -201,3 +201,48 @@ class LightGBMBreach(Baseline):
             index=self.feature_cols,
             name=f"importance_{importance_type}",
         ).sort_values(ascending=False))
+
+    # ------------------------------------------------------------------
+    # Persistence — the agent in step 5 needs to call predict without refit.
+    # We persist the booster as LightGBM's native text format alongside a
+    # tiny JSON sidecar with the feature contract (so a reload that uses a
+    # mismatched FEATURE_COLUMNS version fails loudly instead of silently).
+    # ------------------------------------------------------------------
+    def save(self, path: str | "Path") -> None:
+        from pathlib import Path
+        import json
+        if self.booster_ is None:
+            raise RuntimeError("Cannot save — model not fit.")
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.booster_.save_model(str(path))
+        sidecar = path.with_suffix(path.suffix + ".meta.json")
+        sidecar.write_text(json.dumps({
+            "name": self.name,
+            "horizon": self.horizon,
+            "feature_cols": list(self.feature_cols),
+            "cat_cols": list(self.cat_cols),
+            "best_iter": self.best_iter_,
+            "inner_val_pr_auc": self.inner_val_pr_auc_,
+            "best_params": self.best_params_,
+        }, indent=2))
+
+    @classmethod
+    def load(cls, path: str | "Path") -> "LightGBMBreach":
+        from pathlib import Path
+        import json
+        path = Path(path)
+        sidecar = path.with_suffix(path.suffix + ".meta.json")
+        meta = json.loads(sidecar.read_text())
+        obj = cls(
+            name=meta["name"],
+            horizon=meta["horizon"],
+            tune=False,
+            feature_cols=tuple(meta["feature_cols"]),
+            cat_cols=tuple(meta["cat_cols"]),
+        )
+        obj.booster_ = lgb.Booster(model_file=str(path))
+        obj.best_iter_ = meta.get("best_iter")
+        obj.inner_val_pr_auc_ = meta.get("inner_val_pr_auc")
+        obj.best_params_ = meta.get("best_params")
+        return obj

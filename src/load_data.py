@@ -69,6 +69,7 @@ def _normalize_pa(name: pd.Series) -> pd.Series:
 def load_lice(
     apply_cutoff: bool = True,
     drop_fallow: bool = False,
+    commercial_only: bool = True,
 ) -> pd.DataFrame:
     """Load and clean vlice.csv.
 
@@ -79,6 +80,12 @@ def load_lice(
         ONLY for downstream scoring / serving — never for training or features.
     drop_fallow
         If True, drop rows where LIKELYNOFISH == True (no fish on site).
+    commercial_only
+        If True (default), exclude the 9 Havforskningsinstituttet research
+        sites listed in `src.research_sites`. Their lice profiles reflect
+        study protocols, not commercial operation, and bias every aggregate
+        (treatment intensity, breach rate, top-site rankings, model targets).
+        Set to False only for audit / verification / inclusion analyses.
     """
     path = RAW / "vlice.csv"
     df = pd.read_csv(path, encoding="utf-8-sig", engine="python", sep=None)
@@ -144,11 +151,19 @@ def load_lice(
         df = df[(df["WEEK_START"] < TRAIN_CUTOFF) & (df["YEAR"] < 2026)].copy()
         assert_no_leakage(df)
 
+    if commercial_only:
+        from src.research_sites import RESEARCH_SITE_IDS  # local import to avoid cycle
+        df = df[~df["SITENUMBER"].isin(RESEARCH_SITE_IDS)].copy()
+
     return df.sort_values(["SITENUMBER", "WEEK_START"]).reset_index(drop=True)
 
 
-def load_treatment(apply_cutoff: bool = True) -> pd.DataFrame:
-    """Load and clean vtreatment.csv."""
+def load_treatment(apply_cutoff: bool = True,
+                    commercial_only: bool = True) -> pd.DataFrame:
+    """Load and clean vtreatment.csv.
+
+    See `load_lice` for the meaning of `commercial_only` — same semantics.
+    """
     path = RAW / "vtreatment.csv"
     df = pd.read_csv(path, encoding="utf-8-sig", engine="python", sep=None)
 
@@ -162,12 +177,22 @@ def load_treatment(apply_cutoff: bool = True) -> pd.DataFrame:
         df = df[(df["WEEK_START"] < TRAIN_CUTOFF) & (df["YEAR"] < 2026)].copy()
         assert_no_leakage(df)
 
+    if commercial_only:
+        from src.research_sites import RESEARCH_SITE_IDS  # local import to avoid cycle
+        df = df[~df["SITENUMBER"].isin(RESEARCH_SITE_IDS)].copy()
+
     return df.sort_values(["SITENUMBER", "WEEK_START"]).reset_index(drop=True)
 
 
-def load_training_data() -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Convenience: return (lice, treatment) both filtered to < 2026."""
-    return load_lice(apply_cutoff=True), load_treatment(apply_cutoff=True)
+def load_training_data(commercial_only: bool = True
+                       ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Convenience: return (lice, treatment) both filtered to < 2026.
+
+    `commercial_only=True` (default) also excludes HI research sites; see
+    `load_lice` for details.
+    """
+    return (load_lice(apply_cutoff=True, commercial_only=commercial_only),
+            load_treatment(apply_cutoff=True, commercial_only=commercial_only))
 
 
 # ----------------------------------------------------------------------------

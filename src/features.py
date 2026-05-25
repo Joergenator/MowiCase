@@ -280,6 +280,37 @@ FEATURE_COLUMNS = FEATURE_COLUMNS_V2
 CATEGORICAL_FEATURES = ("PRODUCTIONAREAID", "target_iso_week")
 
 
+def build_inference_frame(
+    lice: pd.DataFrame,
+    treatment: pd.DataFrame,
+    horizon: int,
+) -> pd.DataFrame:
+    """Build features for live prediction — one row per site at its latest week.
+
+    Used by the LLM agent's `predict_risk` tool. Unlike `build_feature_frame`,
+    we do NOT shift a target backwards (there is no future label), so the
+    latest weeks of training data — which `make_supervised_frame` would drop
+    because they have no target — are kept here. The `target_iso_week`
+    feature is computed from `WEEK_START + horizon` to match what the model
+    saw at training time.
+    """
+    aug = add_lag_features(lice)
+    aug = add_rolling_features(aug)
+    aug = add_degree_weeks(aug)
+    aug = add_treatment_features(aug, treatment)
+    aug = add_cleaner_fish_features(aug)
+    aug = add_site_age(aug)
+
+    latest = (aug.sort_values(["SITENUMBER", "WEEK_START"])
+                 .groupby("SITENUMBER", sort=False).tail(1).copy())
+    latest["target_week_start"] = latest["WEEK_START"] + pd.to_timedelta(horizon * 7, unit="D")
+    latest["target_iso_week"] = latest["target_week_start"].dt.isocalendar().week.astype(int)
+
+    latest = latest.dropna(subset=["PRODUCTIONAREAID"]).copy()
+    latest["PRODUCTIONAREAID"] = latest["PRODUCTIONAREAID"].astype(int)
+    return latest.reset_index(drop=True)
+
+
 def build_feature_frame(
     lice: pd.DataFrame,
     treatment: pd.DataFrame,

@@ -40,7 +40,12 @@ plt.rcParams.update({
 })
 
 FIG_DIR = ROOT / "reports" / "figures"
-FIG_DIR.mkdir(parents=True, exist_ok=True)
+FIG_TREATMENTS = FIG_DIR / "Treatments"
+FIG_BREACHES = FIG_DIR / "breaches"
+FIG_TEMPS = FIG_DIR / "temperatures"
+FIG_LICE_CORR = FIG_DIR / "Lice_correlation"
+for _d in (FIG_DIR, FIG_TREATMENTS, FIG_BREACHES, FIG_TEMPS, FIG_LICE_CORR):
+    _d.mkdir(parents=True, exist_ok=True)
 
 
 def short_po_name(name: str) -> str:
@@ -123,7 +128,7 @@ ax.set_xlabel("Treatments per active site-year")
 ax.set_title("Treatment intensity by Production Area")
 ax.bar_label(bars, fmt="%.2f", padding=3, fontsize=9)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "01_treatment_intensity_by_po.png")
+fig.savefig(FIG_TREATMENTS / "01_treatment_intensity_by_po.png")
 plt.show()
 
 print(intensity.sort_values("per_site_year", ascending=False).round(2))
@@ -157,7 +162,7 @@ ax.set_title("Lice-limit breach rate by Production Area")
 ax.bar_label(bars, fmt="%.1f%%", padding=3, fontsize=9)
 ax.legend(loc="lower right")
 fig.tight_layout()
-fig.savefig(FIG_DIR / "02_breach_rate_by_po.png")
+fig.savefig(FIG_BREACHES / "02_breach_rate_by_po.png")
 plt.show()
 
 print(breach_rate.assign(mean_pct=lambda d: (d["mean"] * 100).round(2)).sort_values("mean", ascending=False))
@@ -232,7 +237,7 @@ plt.setp(axes[-1].get_xticklabels(), rotation=0, fontsize=9)
 fig.suptitle("Adult-female lice by temperature & PO — split by regulatory regime",
              y=1.0, fontsize=14, fontweight="bold")
 fig.tight_layout()
-fig.savefig(FIG_DIR / "03_temp_po_heatmap.png")
+fig.savefig(FIG_TEMPS / "03_temp_po_heatmap.png")
 plt.show()
 
 
@@ -277,7 +282,7 @@ ax.set_title("Seasonal lice pressure: pronounced autumn peak after the spring wi
 ax.legend(loc="upper left", fontsize=9, ncol=2)
 ax.set_xlim(1, 53)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "04_seasonal_pattern.png")
+fig.savefig(FIG_TEMPS / "04_seasonal_pattern.png")
 plt.show()
 
 
@@ -331,8 +336,11 @@ ax.set_xlim(0, 1)
 ax.set_ylabel("")
 ax.set_title("Mobile ↔ adult-female lice correlation, by PO")
 ax.legend(loc="lower right", fontsize=10)
+# Annotate each bar with its correlation value (same style as 05e / 05f)
+for container in ax.containers:
+    ax.bar_label(container, fmt="%.2f", padding=3, fontsize=8)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "05_mobile_adultfemale_corr.png")
+fig.savefig(FIG_LICE_CORR / "05_mobile_adultfemale_pearson_correlation.png")
 plt.show()
 
 print(corr_df.round(3))
@@ -370,7 +378,7 @@ ax.set_ylabel("Latitude (°N)")
 ax.set_title(f"Breach hotspots along the Norwegian coast (n={len(site_breach)} sites)")
 ax.set_aspect(2.0)  # Norway is tall; stretch lat axis for legibility
 fig.tight_layout()
-fig.savefig(FIG_DIR / "06_geographic_breach_map.png")
+fig.savefig(FIG_BREACHES / "06_geographic_breach_map.png")
 plt.show()
 
 
@@ -432,7 +440,7 @@ ax.set_title("Treatment events per year, by method")
 ax.legend(title="Treatment method", loc="upper left", fontsize=10, frameon=True)
 ax.grid(True, alpha=0.3)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "07_treatment_mix_over_time.png")
+fig.savefig(FIG_TREATMENTS / "07_treatment_mix_over_time.png")
 plt.show()
 
 print(treat_mix.tail(8))
@@ -488,7 +496,7 @@ ax_bot.set_xlim(1, 53)
 ax_bot.legend(loc="upper left", fontsize=9, ncol=2)
 
 fig.tight_layout()
-fig.savefig(FIG_DIR / "09_lice_vs_temperature_by_year.png")
+fig.savefig(FIG_TEMPS / "09_lice_vs_temperature_by_year.png")
 plt.show()
 
 # --- Compute the peak-window summary table so the narrative is data-driven ---
@@ -548,7 +556,7 @@ ax.set_xlabel("Active treatments per active site-year (cleaner fish excluded)")
 ax.set_title("Active-treatment intensity by PO — cleaner fish excluded")
 ax.bar_label(bars, fmt="%.2f", padding=3, fontsize=9)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "10_treatment_intensity_no_cleanerfish.png")
+fig.savefig(FIG_TREATMENTS / "10_treatment_intensity_no_cleanerfish.png")
 plt.show()
 
 # Compare rankings side-by-side so the deck can call out which POs shift

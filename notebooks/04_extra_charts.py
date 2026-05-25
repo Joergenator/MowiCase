@@ -44,7 +44,10 @@ plt.rcParams.update({
 })
 
 FIG_DIR = ROOT / "reports" / "figures"
-FIG_DIR.mkdir(parents=True, exist_ok=True)
+FIG_BREACHES = FIG_DIR / "breaches"
+FIG_TEMPS = FIG_DIR / "temperatures"
+for _d in (FIG_DIR, FIG_BREACHES, FIG_TEMPS):
+    _d.mkdir(parents=True, exist_ok=True)
 
 lice = load_lice()
 lice_counted = lice.dropna(subset=["BREACH"])
@@ -208,7 +211,7 @@ gl.ylabel_style = {"size": 9}
 ax.set_title(f"Chart of breaches in {YEAR}")
 ax.legend(loc="lower right", fontsize=10, framealpha=0.95)
 fig.tight_layout()
-fig.savefig(FIG_DIR / f"chart_of_breaches_{YEAR}.png")
+fig.savefig(FIG_BREACHES / f"chart_of_breaches_{YEAR}.png")
 plt.show()
 
 # Per-PO breakdown for the deck
@@ -297,7 +300,7 @@ cb.set_label(f"Breach weeks in year (clipped at {vmax_shared})")
 
 fig.suptitle("Chart of breaches 2020-2025 (one panel per year)",
              fontsize=15, fontweight="bold", y=0.96)
-fig.savefig(FIG_DIR / "chart_of_breaches_2020_2025.png")
+fig.savefig(FIG_BREACHES / "chart_of_breaches_2020_2025.png")
 plt.show()
 
 
@@ -360,7 +363,7 @@ ax.set_xlim(1, 52)
 ax.legend(loc="upper left", fontsize=10, framealpha=0.95)
 ax.grid(True, alpha=0.3)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "temp_po9_12_2024.png")
+fig.savefig(FIG_TEMPS / "temp_po9_12_2024.png")
 plt.show()
 
 # Year summary by PO — useful numbers for the deck
@@ -453,7 +456,7 @@ axes_flat[0].legend(loc="upper left", fontsize=9, framealpha=0.95)
 fig.suptitle("Sjøtemperatur i PO 9-12 (Nord-Norge), 2019-2024 — ukentlig snitt per område",
              fontsize=14, fontweight="bold", y=0.995)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "temp_po9_12_2019_2024.png")
+fig.savefig(FIG_TEMPS / "temp_po9_12_2019_2024.png")
 plt.show()
 
 # Year-by-year peak summary for the deck
@@ -472,138 +475,75 @@ print(peak_window_summary.to_string())
 
 
 # %% [markdown]
-# ## Temperatur og lus i PO 1-2 vs PO 3-4, 2024 (2×2)
+# ## Topp-20 kommersielle sites med flest brudd (alle år, 2012-2025)
 #
-# Sør-Norge har en lengre varm sesong enn nord (chart-en over). Dette 2×2-
-# grid-et viser:
-# - Topp-rad: ukentlig **sjøtemperatur** per PO i 2024.
-# - Bunn-rad: ukentlig **FEMALEADULT lus per fisk** per PO i 2024.
-# - Venstre kolonne: PO1 (Svenskegrensen til Jæren) + PO2 (Ryfylket).
-# - Høyre kolonne: PO3 (Karmøy til Sotra) + PO4 (Nordhordaland til Stadt).
+# Erstatter den gamle `chart_of_breaches_5lt.png` (geografisk scatter med
+# uleselig fargeskala). Horisontal stolpegraf — leses ovenfra og ned.
+# Hvert site er fargelagt etter PO så geografisk klyngedannelse er synlig.
 #
-# Lese-rytme: vertikalt for "temperaturen driver lus" innenfor en region,
-# horisontalt for nord-vs-sør-sammenlikning på samme tid.
+# Filtrert til kommersielle lokaliteter — 9 forskningslokaliteter eid av
+# Havforskningsinstituttet (HI) ekskludert siden de driver med kontrollerte
+# studier (forhøyet lusebelastning, redusert behandling) som ikke
+# reflekterer kommersiell produksjon. Se `src/research_sites.py`.
 
 # %%
-SOUTH_POS_PAIRS = [
-    ("PO 1-2  (Svenskegrensen til Jæren, Ryfylket)", [1, 2]),
-    ("PO 3-4  (Karmøy til Sotra, Nordhordaland til Stadt)", [3, 4]),
-]
+from src.research_sites import filter_commercial
 
-PO_PAIR_COLORS = {
-    1: "#1f77b4",  # PO1 blue
-    2: "#2ca02c",  # PO2 green
-    3: "#ff7f0e",  # PO3 orange
-    4: "#d62728",  # PO4 red
-}
-
-
-def weekly_agg(df, value_col, group_cols):
-    """Weekly aggregate (mean, p10, p90, n_obs) per group, dropping nulls."""
-    sub = df.dropna(subset=[value_col]).copy()
-    sub["iso_week"] = sub["WEEK_START"].dt.isocalendar().week.astype(int)
-    agg = (sub.groupby(group_cols + ["iso_week"])
-              .agg(value_mean=(value_col, "mean"),
-                   value_p10=(value_col, lambda s: s.quantile(0.10)),
-                   value_p90=(value_col, lambda s: s.quantile(0.90)),
-                   n_obs=(value_col, "size"))
-              .reset_index())
-    return agg[agg["n_obs"] >= 3]
-
-
-lice_2024_south = lice[
-    (lice["WEEK_START"].dt.year == 2024)
-    & (lice["PRODUCTIONAREAID"].isin([1, 2, 3, 4]))
-].copy()
-
-fig, axes = plt.subplots(2, 2, figsize=(15, 10),
-                         sharex=True,
-                         gridspec_kw={"wspace": 0.18, "hspace": 0.25})
-
-# Temperature row (shared y across the two temp panels)
-temp_ax_pair = axes[0, :]
-# Lice row (shared y across the two lice panels)
-lice_ax_pair = axes[1, :]
-temp_ax_pair[1].sharey(temp_ax_pair[0])
-lice_ax_pair[1].sharey(lice_ax_pair[0])
-
-# ---- Top row: temperature ----
-for ax, (title, po_ids) in zip(temp_ax_pair, SOUTH_POS_PAIRS):
-    df_pair = lice_2024_south[lice_2024_south["PRODUCTIONAREAID"].isin(po_ids)]
-    agg = weekly_agg(df_pair, "SEATEMPERATURE",
-                     ["PRODUCTIONAREAID", "PRODUCTIONAREA"])
-    for po_id in po_ids:
-        sub = agg[agg["PRODUCTIONAREAID"] == po_id].sort_values("iso_week")
-        if sub.empty:
-            continue
-        color = PO_PAIR_COLORS[po_id]
-        ax.fill_between(sub["iso_week"], sub["value_p10"], sub["value_p90"],
-                        color=color, alpha=0.12, linewidth=0)
-        ax.plot(sub["iso_week"], sub["value_mean"],
-                color=color, linewidth=2.0, marker="o", markersize=3,
-                label=po_label(po_id, sub["PRODUCTIONAREA"].iloc[0]))
-    ax.axhline(8, color="grey", linestyle="--", linewidth=0.8, alpha=0.5)
-    ax.set_title(title, fontsize=11)
-    ax.set_ylabel("Sjøtemperatur (°C)")
-    ax.grid(True, alpha=0.3)
-    ax.legend(loc="upper left", fontsize=9, framealpha=0.95)
-    ax.set_xlim(1, 52)
-
-# ---- Bottom row: lice (FEMALEADULT) ----
-for ax, (title, po_ids) in zip(lice_ax_pair, SOUTH_POS_PAIRS):
-    df_pair = lice_2024_south[lice_2024_south["PRODUCTIONAREAID"].isin(po_ids)]
-    agg = weekly_agg(df_pair, "FEMALEADULT",
-                     ["PRODUCTIONAREAID", "PRODUCTIONAREA"])
-    for po_id in po_ids:
-        sub = agg[agg["PRODUCTIONAREAID"] == po_id].sort_values("iso_week")
-        if sub.empty:
-            continue
-        color = PO_PAIR_COLORS[po_id]
-        ax.fill_between(sub["iso_week"], sub["value_p10"], sub["value_p90"],
-                        color=color, alpha=0.12, linewidth=0)
-        ax.plot(sub["iso_week"], sub["value_mean"],
-                color=color, linewidth=2.0, marker="o", markersize=3,
-                label=po_label(po_id, sub["PRODUCTIONAREA"].iloc[0]))
-    # Regulatory thresholds: 0.5 normal, 0.2 in spring window (W16-22)
-    ax.axhline(0.5, color="#cc0000", linestyle="--", linewidth=0.8, alpha=0.5)
-    ax.text(51.5, 0.51, "0.5 limit", fontsize=8, color="#cc0000",
-            ha="right", va="bottom")
-    ax.axhline(0.2, color="#cc0000", linestyle=":", linewidth=0.8, alpha=0.5)
-    ax.text(51.5, 0.21, "0.2 spring limit", fontsize=8, color="#cc0000",
-            ha="right", va="bottom")
-    ax.set_title(title, fontsize=11)
-    ax.set_ylabel("FEMALEADULT lus / fisk")
-    ax.set_xlabel("ISO uke (2024)")
-    ax.grid(True, alpha=0.3)
-    ax.legend(loc="upper left", fontsize=9, framealpha=0.95)
-    ax.set_xlim(1, 52)
-
-fig.suptitle("Sør-Norge 2024 — temperatur (topp) og lus (bunn) per PO-par",
-             fontsize=14, fontweight="bold", y=0.995)
-fig.tight_layout()
-fig.savefig(FIG_DIR / "temp_lice_po1_4_2024.png")
-plt.show()
-
-# Print summary for the deck
-print("\nÅrssnitt 2024 — PO 1-4:")
-summary_south = (
-    lice_2024_south.dropna(subset=["SEATEMPERATURE", "FEMALEADULT"], how="all")
-    .groupby(["PRODUCTIONAREAID", "PRODUCTIONAREA"])
-    .agg(mean_temp_C=("SEATEMPERATURE", "mean"),
-         peak_temp_C=("SEATEMPERATURE", "max"),
-         mean_femaleadult=("FEMALEADULT", "mean"),
-         peak_femaleadult=("FEMALEADULT", "max"),
-         n_sites=("SITENUMBER", "nunique"))
-    .round(2)
+commercial_breaches = filter_commercial(
+    lice_counted[lice_counted["BREACH"] == True]  # noqa: E712
 )
-print(summary_south.to_string())
+top_site_breaches = (
+    commercial_breaches
+    .groupby(["SITENUMBER", "SITENAME", "PRODUCTIONAREAID", "PRODUCTIONAREA"])
+    .agg(breach_weeks=("BREACH", "size"),
+         first_breach=("WEEK_START", "min"),
+         last_breach=("WEEK_START", "max"))
+    .reset_index()
+    .sort_values("breach_weeks", ascending=False)
+    .head(20)
+    .reset_index(drop=True)
+)
+print(top_site_breaches[["SITENUMBER", "SITENAME", "PRODUCTIONAREA",
+                          "breach_weeks", "first_breach", "last_breach"]].to_string())
 
-print("\nYear-by-year summary:")
-summary = (per_site_year.groupby("YEAR_")
-           .agg(sites_counted=("SITENUMBER", "nunique"),
-                sites_breached=("breach_weeks", lambda s: (s >= 1).sum()),
-                total_breach_weeks=("breach_weeks", "sum"),
-                max_at_site=("breach_weeks", "max")))
-summary["pct_breached"] = (summary["sites_breached"]
-                           / summary["sites_counted"] * 100).round(1)
-print(summary)
+# Sorted ascending for the bar chart (top entry at the top of the figure)
+top_plot = top_site_breaches.iloc[::-1].copy()
+top_plot["label"] = top_plot.apply(
+    lambda r: f"{r['SITENAME']} (PO{int(r['PRODUCTIONAREAID'])})", axis=1)
+top_plot["po_short"] = top_plot.apply(
+    lambda r: po_label(r["PRODUCTIONAREAID"], r["PRODUCTIONAREA"]), axis=1)
+
+# Distinct color per PO so the geographic clustering is readable
+unique_pos = sorted(top_plot["PRODUCTIONAREAID"].unique())
+palette = sns.color_palette("tab10", n_colors=max(len(unique_pos), 3))
+po_colors = {po: palette[i] for i, po in enumerate(unique_pos)}
+bar_colors = [po_colors[po] for po in top_plot["PRODUCTIONAREAID"]]
+
+fig, ax = plt.subplots(figsize=(11, 8))
+bars = ax.barh(top_plot["label"], top_plot["breach_weeks"], color=bar_colors,
+               edgecolor="grey", linewidth=0.4)
+
+# Annotate each bar with the breach count
+for bar, n in zip(bars, top_plot["breach_weeks"]):
+    ax.text(bar.get_width() + 3, bar.get_y() + bar.get_height() / 2,
+            f"{int(n)}", va="center", fontsize=9)
+
+ax.set_xlabel("Antall uker med brudd (kumulativt, 2012-2025)")
+ax.set_title("Topp-20 kommersielle sites med flest lusebrudd — 2012-2025\n"
+             "(9 HI-forskningslokaliteter ekskludert)",
+             fontsize=13)
+ax.set_xlim(0, top_plot["breach_weeks"].max() * 1.10)
+
+# PO color legend
+legend_pos_sorted = sorted(unique_pos)
+handles = [plt.Rectangle((0, 0), 1, 1, color=po_colors[po])
+           for po in legend_pos_sorted]
+labels = [po_label(po, top_plot[top_plot["PRODUCTIONAREAID"] == po]
+                         ["PRODUCTIONAREA"].iloc[0]) for po in legend_pos_sorted]
+ax.legend(handles, labels, title="Produksjonsområde", loc="lower right",
+          fontsize=9, title_fontsize=10, framealpha=0.95)
+
+ax.grid(axis="x", alpha=0.3)
+fig.tight_layout()
+fig.savefig(FIG_BREACHES / "top20_sites_most_breaches.png")
+plt.show()

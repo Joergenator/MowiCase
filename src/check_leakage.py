@@ -16,16 +16,19 @@ from src.load_data import TRAIN_CUTOFF, load_lice, load_treatment, assert_no_lea
 def main() -> int:
     print(f"Leakage check — TRAIN_CUTOFF = {TRAIN_CUTOFF.date()}")
 
-    lice = load_lice(apply_cutoff=True)
-    treat = load_treatment(apply_cutoff=True)
+    # commercial_only=False so we verify the full raw dataset, not just the
+    # commercial subset — leakage discipline is about the source data, not
+    # any downstream filter.
+    lice = load_lice(apply_cutoff=True, commercial_only=False)
+    treat = load_treatment(apply_cutoff=True, commercial_only=False)
 
     assert_no_leakage(lice)
     assert_no_leakage(treat)
 
-    print(f"  lice:      max WEEK_START = {lice['WEEK_START'].max().date()}  ✓")
-    print(f"  treatment: max WEEK_START = {treat['WEEK_START'].max().date()}  ✓")
+    print(f"  lice:      max WEEK_START = {lice['WEEK_START'].max().date()}  OK")
+    print(f"  treatment: max WEEK_START = {treat['WEEK_START'].max().date()}  OK")
 
-    full = load_lice(apply_cutoff=False)
+    full = load_lice(apply_cutoff=False, commercial_only=False)
     n_excluded = (full["WEEK_START"] >= TRAIN_CUTOFF).sum()
     print(f"  Rows excluded by cutoff: {n_excluded}")
 
